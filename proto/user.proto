@@ -1,0 +1,59 @@
+// protoc --go_out=plugins=grpc:. *.proto
+
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+package userService;
+option go_package = ".;userService";
+
+message Session {
+  string session = 1;
+}
+
+message User {
+  string uuid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string email = 2 [(google.api.field_behavior) = REQUIRED];
+  string password = 3;
+  google.protobuf.Timestamp created_at = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp updated_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message SignInRequest {
+  User user = 1;
+}
+
+message SignInResponse {
+  User user = 1;
+}
+
+message LoginRequest {
+  User user = 1;
+}
+
+message LoginResponse {
+  string session_id = 1;
+}
+
+service UserService{
+  rpc SignIn(SignInRequest) returns (SignInResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/signin"
+      body: "user" // pass creds in body is safe versus pass them in URL parameters
+    };
+  }
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/v1/auth/login"
+      body: "user" // pass creds in body is safe versus pass them in URL parameters
+    };
+  }
+  rpc Logout(google.protobuf.Empty) returns(google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/v1/auth/logout"
+    };
+  }
+}
