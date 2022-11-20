@@ -1,5 +1,6 @@
 # IDE stuff
 *.code-workspace
+.idea/
 
 # Binaries for programs and plugins
 *.exe
