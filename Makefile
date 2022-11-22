@@ -17,10 +17,12 @@ PROJECT_NAME=$(notdir $(shell pwd))
 # ==============================================================================
 # Install commands
 init:
+	@echo Performing go mod init & git submodule add...
 	@go mod init github.com/$(GITHUB)/$(PROJECT_NAME)
 	@git submodule add https://github.com/googleapis/googleapis
 
 install-tools:
+	@echo Checking tools are installed...
 ifndef PROTOC_INSTALLED
 	$(error "go is not installed, please run 'brew install go'")
 endif
@@ -44,6 +46,7 @@ endif
 # Modules support
 
 tidy:
+	@echo Running go mod tidy...
 	@go mod tidy
 # go mod vendor
 
@@ -51,6 +54,7 @@ tidy:
 # Build commands
 
 gen: install-tools
+	@echo Running protoc...
 	@sh ./proto_gen.sh .
 
 # curl -OL --output-dir ./www https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto
