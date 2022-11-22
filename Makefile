@@ -53,3 +53,4 @@ tidy:
 gen: install-tools
 	@sh ./proto_gen.sh .
 
+# curl -OL --output-dir ./www https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto
