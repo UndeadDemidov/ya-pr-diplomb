@@ -31,26 +31,26 @@ ifndef PROTOC_INSTALLED
 endif
 ifndef PGG_INSTALLED
 	@echo Installing protoc-gen-go...
-	@go get google.golang.org/protobuf/cmd/protoc-gen-go
 	@go mod tidy
+	@go get google.golang.org/protobuf/cmd/protoc-gen-go
 	@go install google.golang.org/protobuf/cmd/protoc-gen-go
 endif
 ifndef PGGG_INSTALLED
 	@echo Installing protoc-gen-go-grpc...
-	@go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
 	@go mod tidy
+	@go get google.golang.org/grpc/cmd/protoc-gen-go-grpc
 	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
 endif
 ifndef PGGGW_INSTALLED
 	@echo Installing protoc-gen-grpc-gateway...
-	@go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 	@go mod tidy
+	@go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
 endif
 ifndef PGOA_INSTALLED
 	@echo Installing protoc-gen-openapiv2...
-	@go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	@go mod tidy
+	@go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 endif
 
