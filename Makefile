@@ -29,17 +29,21 @@ endif
 ifndef PROTOC_INSTALLED
 	$(error "protoc is not installed, please run 'brew install protobuf'")
 endif
-ifndef PGGGW_INSTALLED
-	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-endif
-ifndef PGOA_INSTALLED
-	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-endif
 ifndef PGG_INSTALLED
+	@echo Installing protoc-gen-go...
 	@go install google.golang.org/protobuf/cmd/protoc-gen-go
 endif
 ifndef PGGG_INSTALLED
+	@echo Installing protoc-gen-go-grpc...
 	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc
+endif
+ifndef PGGGW_INSTALLED
+	@echo Installing protoc-gen-grpc-gateway...
+	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+endif
+ifndef PGOA_INSTALLED
+	@echo Installing protoc-gen-openapiv2...
+	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 endif
 
 # ==============================================================================
