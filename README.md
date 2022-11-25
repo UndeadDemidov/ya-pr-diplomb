@@ -1,4 +1,4 @@
-[![Lint Status](https://github.com/UndeadDemidov/ya-pr-diplomb/workflows/golangci-lint/badge.svg)](https://github.com/UndeadDemidov/ya-pr-diplomb/actions)
+![Build Status](https://github.com/UndeadDemidov/ya-pr-diplomb/workflows/CI/badge.svg)
 
 # ya-pr-diplomb
 
