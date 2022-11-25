@@ -32,11 +32,6 @@ jobs:
           go-version: '1.19'
           check-latest: true
 
-      - name: Install linters and checks
-        run: |
-          go install honnef.co/go/tools/cmd/staticcheck@latest
-          go install golang.org/x/lint/golint@latest
-
       - name: Install protobuf
         run: |
           sudo apt-get update
@@ -52,6 +47,11 @@ jobs:
       - name: Build
         run: go build -v ./...
 
+      - name: Install linters and checks
+        run: |
+          go install honnef.co/go/tools/cmd/staticcheck@latest
+          go install golang.org/x/lint/golint@latest
+
       - name: Run go vet
         run: go vet ./...
 
@@ -61,13 +61,13 @@ jobs:
       - name: Run golint
         run: golint ./...
 
-      - name: golangci-lint
+      - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:
           # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
           version: latest
 
-            # Optional: golangci-lint command line arguments.
+          # Optional: golangci-lint command line arguments.
           args: --enable-all
 
             # Optional: show only new issues if it's a pull request. The default value is `false`.

@@ -1,6 +1,5 @@
 # ==============================================================================
 # Arguments passing to Makefile commands
-# GRPC_GATEWAY_DIR := $(shell go list -f '{{ .Dir }}' -m github.com/grpc-ecosystem/grpc-gateway 2> /dev/null)
 GO_INSTALLED := $(shell which go)
 PROTOC_INSTALLED := $(shell which protoc)
 PGGGW_INSTALLED := $(shell which protoc-gen-grpc-gateway 2> /dev/null)
@@ -10,9 +9,6 @@ PGGG_INSTALLED := $(shell which protoc-gen-go-grpc 2> /dev/null)
 
 GITHUB=UndeadDemidov
 PROJECT_NAME=$(notdir $(shell pwd))
-
-#show:
-#	echo $(PROJECT)
 
 # ==============================================================================
 # Install commands
@@ -69,4 +65,6 @@ gen: install-tools
 	@echo Running protoc...
 	@sh ./proto_gen.sh .
 
-# curl -OL --output-dir ./www https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/http.proto
+# ==============================================================================
+# Test commands
+
