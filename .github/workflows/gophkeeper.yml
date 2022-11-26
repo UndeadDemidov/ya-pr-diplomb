@@ -17,7 +17,7 @@ jobs:
 
       - name: Cache googleapis repo
         id: cache-googleapis
-        uses: actions/cache@v3
+        uses: actions/cache@v3.0.5
         with:
           path: googleapis
           key: ${{ runner.os }}-googleapis
@@ -42,15 +42,12 @@ jobs:
         run: go mod verify
 
       - name: Generate
-        run: make gen
+        run: |
+          make install-tools
+          go generate -x ./...
 
       - name: Build
         run: go build -v ./...
-
-      - name: Install linters and checks
-        run: |
-          go install honnef.co/go/tools/cmd/staticcheck@latest
-          go install golang.org/x/lint/golint@latest
 
       - name: Run go vet
         run: go vet ./...

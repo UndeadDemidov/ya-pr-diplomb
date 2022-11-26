@@ -6,6 +6,8 @@ PGGGW_INSTALLED := $(shell which protoc-gen-grpc-gateway 2> /dev/null)
 PGOA_INSTALLED := $(shell which protoc-gen-openapiv2 2> /dev/null)
 PGG_INSTALLED := $(shell which protoc-gen-go 2> /dev/null)
 PGGG_INSTALLED := $(shell which protoc-gen-go-grpc 2> /dev/null)
+SS_INSTALLED := $(shell which staticcheck 2> /dev/null)
+GL_INSTALLED := $(shell which golint 2> /dev/null)
 
 GITHUB=UndeadDemidov
 PROJECT_NAME=$(notdir $(shell pwd))
@@ -49,6 +51,14 @@ ifndef PGOA_INSTALLED
 	@go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 endif
+ifndef SS_INSTALLED
+	@echo Installing staticcheck...
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+endif
+ifndef GL_INSTALLED
+	@echo Installing golint...
+	go install golang.org/x/lint/golint@latest
+endif
 
 # ==============================================================================
 # Modules support
@@ -65,6 +75,16 @@ gen: install-tools
 	@echo Running protoc...
 	@sh ./proto_gen.sh .
 
+build: gen
+	@echo Building...
+	@go build -v ./...
+
 # ==============================================================================
 # Test commands
 
+lint: build
+	@echo Running lints...
+	@go vet ./...
+	@staticcheck ./...
+	@golint ./...
+	@golangci-lint run
