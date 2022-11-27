@@ -13,7 +13,7 @@ import (
 
 // AuthInterceptor is a server interceptor for authentication and authorization.
 type AuthInterceptor struct {
-	logger     *zerolog.Logger
+	log        *zerolog.Logger
 	jwtManager *pkg.JWTManager
 }
 
@@ -30,7 +30,7 @@ func (i *AuthInterceptor) Unary() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
-		i.logger.Info().Msgf("--> unary i: %s", info.FullMethod)
+		i.log.Info().Msgf("--> unary i: %s", info.FullMethod)
 
 		err := i.authorize(ctx)
 		if err != nil {
@@ -49,7 +49,7 @@ func (i *AuthInterceptor) Stream() grpc.StreamServerInterceptor {
 		info *grpc.StreamServerInfo,
 		handler grpc.StreamHandler,
 	) error {
-		i.logger.Info().Msgf("--> stream i: %s", info.FullMethod)
+		i.log.Info().Msgf("--> stream i: %s", info.FullMethod)
 
 		err := i.authorize(stream.Context())
 		if err != nil {
@@ -79,7 +79,7 @@ func (i *AuthInterceptor) authorize(ctx context.Context) error {
 	}
 
 	// ToDo claims put in context
-	i.logger.Info().Msgf("access token claims %v", claims)
+	i.log.Info().Msgf("access token claims %v", claims)
 
 	return status.Error(codes.PermissionDenied, "no permission to access this RPC") //nolint:wrapcheck
 }

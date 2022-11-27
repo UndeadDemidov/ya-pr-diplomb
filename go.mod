@@ -3,8 +3,8 @@ module github.com/UndeadDemidov/ya-pr-diplomb
 go 1.19
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/validator/v10 v10.11.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.14.0
 	github.com/opentracing/opentracing-go v1.2.0
