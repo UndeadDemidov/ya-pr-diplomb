@@ -84,3 +84,7 @@ linters:
     - wastedassign
     - tagliatelle
     - godox
+    - nonamedreturns
+    - exhaustruct
+    - gofumpt
+    - wsl

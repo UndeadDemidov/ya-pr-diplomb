@@ -16,41 +16,9 @@
     "application/json"
   ],
   "paths": {
-    "/v1/auth/login": {
+    "/v1/auth/signin": {
       "post": {
-        "operationId": "UserService_Login",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/userServiceLoginResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "user",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/userServiceUser"
-            }
-          }
-        ],
-        "tags": [
-          "UserService"
-        ]
-      }
-    },
-    "/v1/auth/logout": {
-      "post": {
-        "operationId": "UserService_Logout",
+        "operationId": "UserService_SignIn",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -66,19 +34,29 @@
             }
           }
         },
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userServiceUser"
+            }
+          }
+        ],
         "tags": [
           "UserService"
         ]
       }
     },
-    "/v1/auth/signin": {
+    "/v1/auth/signon": {
       "post": {
-        "operationId": "UserService_SignIn",
+        "operationId": "UserService_SignOn",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userServiceSignInResponse"
+              "$ref": "#/definitions/userServiceSignOnResponse"
             }
           },
           "default": {
@@ -90,14 +68,37 @@
         },
         "parameters": [
           {
-            "name": "user",
+            "name": "credentials",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/userServiceUser"
+              "$ref": "#/definitions/userServiceCredentials"
             }
           }
         ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/auth/signout": {
+      "post": {
+        "operationId": "UserService_SignOut",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
         "tags": [
           "UserService"
         ]
@@ -132,19 +133,26 @@
         }
       }
     },
-    "userServiceLoginResponse": {
+    "userServiceCredentials": {
       "type": "object",
       "properties": {
-        "sessionId": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
           "type": "string"
         }
-      }
+      },
+      "required": [
+        "email",
+        "password"
+      ]
     },
-    "userServiceSignInResponse": {
+    "userServiceSignOnResponse": {
       "type": "object",
       "properties": {
-        "user": {
-          "$ref": "#/definitions/userServiceUser"
+        "accessToken": {
+          "type": "string"
         }
       }
     },
@@ -155,11 +163,8 @@
           "type": "string",
           "readOnly": true
         },
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
+        "credentials": {
+          "$ref": "#/definitions/userServiceCredentials"
         },
         "createdAt": {
           "type": "string",
@@ -171,10 +176,7 @@
           "format": "date-time",
           "readOnly": true
         }
-      },
-      "required": [
-        "email"
-      ]
+      }
     }
   }
 }

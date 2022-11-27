@@ -1,63 +1,38 @@
 package models
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
+
+// ToDo generate mock and tests.
+
+// Authenticator describes contract for different types of authentication.
+type Authenticator interface {
+	CleanCredentials()
+	SanitizeCredentials()
+}
 
 // User base model.
 type User struct {
-	UserID    uuid.UUID `json:"userID" db:"user_id" validate:"omitempty"`
-	Email     string    `json:"email" db:"email" validate:"omitempty,lte=60,email"`
-	Password  string    `json:"password,omitempty" db:"password"`
-	CreatedAt time.Time `json:"createdAt,omitempty" db:"created_at"`
-	UpdatedAt time.Time `json:"updatedAt,omitempty" db:"updated_at"`
+	UserUUID  uuid.UUID `db:"uuid" validate:"omitempty"`
+	Auth      Authenticator
+	CreatedAt time.Time `db:"created_at" exhaustruct:"optional"`
+	UpdatedAt time.Time `db:"updated_at" exhaustruct:"optional"`
 }
 
-// SanitizePassword removes password.
-func (u *User) SanitizePassword() {
-	u.Password = ""
-}
+// NewUser creates User with credentials.
+func NewUser(auth Authenticator) (usr *User) {
+	auth.CleanCredentials()
 
-// HashPassword hashes password without salt.
-func (u *User) HashPassword() error {
-	hashedPassword, err := bcrypt.GenerateFromPassword(u.saltPassword([]byte(u.Password)), bcrypt.DefaultCost)
-	if err != nil {
-		return fmt.Errorf("failed to generate hash from password: %w", err)
+	return &User{
+		UserUUID: uuid.New(),
+		Auth:     auth,
 	}
-
-	u.Password = string(hashedPassword)
-
-	return nil
 }
 
-// ValidatePassword compares user password and payload.
-func (u *User) ValidatePassword(password string) error {
-	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), u.saltPassword([]byte(password))); err != nil {
-		return fmt.Errorf("failed to compare hash with password: %w", err)
-	}
-
-	return nil
-}
-
-// PrepareCreate cleans credentials.
-func (u *User) PrepareCreate() error {
-	u.Email = strings.ToLower(strings.TrimSpace(u.Email))
-	u.Password = strings.TrimSpace(u.Password)
-
-	if err := u.HashPassword(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// saltPassword mixes password with salt.
-// ToDo salt must be added.
-func (u *User) saltPassword(password []byte) []byte {
-	return password
+// Sanitize removes sensitive info.
+func (u *User) Sanitize() {
+	u.Auth.SanitizeCredentials()
 }

@@ -10,50 +10,46 @@ import "google/protobuf/empty.proto";
 package userService;
 option go_package = ".;userService";
 
-message Session {
-  string session = 1;
+message Credentials {
+  string email = 1 [(google.api.field_behavior) = REQUIRED];
+  string password = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message User {
   string uuid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  string email = 2 [(google.api.field_behavior) = REQUIRED];
-  string password = 3;
-  google.protobuf.Timestamp created_at = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  google.protobuf.Timestamp updated_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  Credentials credentials = 2;
+  google.protobuf.Timestamp created_at = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp updated_at = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message SignInRequest {
   User user = 1;
 }
 
-message SignInResponse {
-  User user = 1;
+message SignOnRequest {
+  Credentials credentials = 1;
 }
 
-message LoginRequest {
-  User user = 1;
-}
-
-message LoginResponse {
-  string session_id = 1;
+message SignOnResponse {
+  string access_token = 1;
 }
 
 service UserService{
-  rpc SignIn(SignInRequest) returns (SignInResponse) {
+  rpc SignIn(SignInRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/v1/auth/signin"
       body: "user" // pass creds in body is safe versus pass them in URL parameters
     };
   }
-  rpc Login(LoginRequest) returns (LoginResponse) {
+  rpc SignOn(SignOnRequest) returns (SignOnResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/login"
-      body: "user" // pass creds in body is safe versus pass them in URL parameters
+      post: "/v1/auth/signon"
+      body: "credentials" // pass creds in body is safe versus pass them in URL parameters
     };
   }
-  rpc Logout(google.protobuf.Empty) returns(google.protobuf.Empty) {
+  rpc SignOut(google.protobuf.Empty) returns(google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/v1/auth/logout"
+      post: "/v1/auth/signout"
     };
   }
 }
