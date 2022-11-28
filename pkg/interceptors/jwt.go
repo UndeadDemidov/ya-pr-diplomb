@@ -3,7 +3,7 @@ package interceptors
 import (
 	"context"
 
-	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
+	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -14,11 +14,11 @@ import (
 // AuthInterceptor is a server interceptor for authentication and authorization.
 type AuthInterceptor struct {
 	log        *zerolog.Logger
-	jwtManager *pkg.JWTManager
+	jwtManager *auth.JWTManager
 }
 
 // NewAuthInterceptor returns a new auth interceptor.
-func NewAuthInterceptor(jwtManager *pkg.JWTManager, logger *zerolog.Logger) *AuthInterceptor {
+func NewAuthInterceptor(jwtManager *auth.JWTManager, logger *zerolog.Logger) *AuthInterceptor {
 	return &AuthInterceptor{logger, jwtManager}
 }
 

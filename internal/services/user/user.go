@@ -6,7 +6,7 @@ import (
 
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/models"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
-	"github.com/opentracing/opentracing-go"
+	au "github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 )
 
 type Persistent interface {
@@ -15,6 +15,8 @@ type Persistent interface {
 }
 
 type Service struct {
+	// ToDo add authenticator base on context.
+	// https://github.com/johanbrandhorst/grpc-auth-example
 	persist Persistent
 }
 
@@ -23,10 +25,7 @@ func NewService(repository Persistent) *Service {
 }
 
 func (s *Service) SignIn(ctx context.Context, usr *models.User) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "user.Service.SignIn")
-	defer span.Finish()
-
-	auth, ok := usr.Auth.(*pkg.BasicAuth)
+	auth, ok := usr.Auth.(*au.BasicAuth)
 	if !ok {
 		return pkg.ErrInvalidTypeCast
 	}
@@ -39,25 +38,23 @@ func (s *Service) SignIn(ctx context.Context, usr *models.User) error {
 	return s.persist.Create(ctx, usr) //nolint:wrapcheck
 }
 
-func (s *Service) SignOn(ctx context.Context, auth *pkg.BasicAuth) (*models.User, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "user.Service.SignOn")
-	defer span.Finish()
-
+func (s *Service) SignOn(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
 	foundUser, err := s.findByEmail(ctx, auth)
 	if err != nil {
 		return nil, fmt.Errorf("given email %s not found: %w", auth.Email, err)
 	}
 
-	err = foundUser.Auth.(*pkg.BasicAuth).ValidatePassword(auth.Password) //nolint:forcetypeassert
+	err = foundUser.Auth.(*au.BasicAuth).ValidatePassword(auth.Password) //nolint:forcetypeassert
 	if err != nil {
 		return nil, fmt.Errorf("given password is not valid: %w", err)
 	}
 
 	foundUser.Sanitize()
+
 	return foundUser, nil
 }
 
-func (s *Service) findByEmail(ctx context.Context, auth *pkg.BasicAuth) (*models.User, error) {
+func (s *Service) findByEmail(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
 	auth.CleanCredentials()
 	foundUser, err := s.persist.FindByEmail(ctx, auth.Email)
 	if err != nil {

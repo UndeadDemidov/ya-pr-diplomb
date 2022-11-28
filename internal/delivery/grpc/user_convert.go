@@ -3,11 +3,11 @@ package grpc
 import (
 	userService "github.com/UndeadDemidov/ya-pr-diplomb/gen_pb/user"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/models"
-	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
+	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 )
 
-func credMsgToBasicAuth(c *userService.Credentials) *pkg.BasicAuth {
-	return &pkg.BasicAuth{
+func credMsgToBasicAuth(c *userService.Credentials) *auth.BasicAuth {
+	return &auth.BasicAuth{
 		Email:    c.GetEmail(),
 		Password: c.GetPassword(),
 	}

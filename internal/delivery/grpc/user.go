@@ -8,7 +8,8 @@ import (
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/delivery"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services/user"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
-	"github.com/opentracing/opentracing-go"
+	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
+	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/telemetry"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -17,20 +18,17 @@ var _ pbUser.UserServiceServer = (*UserServer)(nil)
 
 type UserServer struct {
 	pbUser.UnimplementedUserServiceServer
-	log        pkg.Logger
+	log        telemetry.Logger
 	cfg        *config.App
 	svc        delivery.User
-	jwtManager pkg.JWTManager
+	jwtManager auth.JWTManager
 }
 
-func NewUserServer(logger pkg.Logger, config *config.App, service user.Service) *UserServer {
+func NewUserServer(logger telemetry.Logger, config *config.App, service user.Service) *UserServer {
 	return &UserServer{log: logger, cfg: config, svc: &service}
 }
 
 func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) (*emptypb.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "grpc.UserServer.SignIn")
-	defer span.Finish()
-
 	usr := signinMsgToUser(request)
 	if err := pkg.ValidateStruct(ctx, usr); err != nil {
 		u.log.Errorf("ValidateStruct: %v", err)
@@ -49,9 +47,6 @@ func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) 
 }
 
 func (u *UserServer) SignOn(ctx context.Context, request *pbUser.SignOnRequest) (*pbUser.SignOnResponse, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "grpc.UserServer.SignOn")
-	defer span.Finish()
-
 	creds := credMsgToBasicAuth(request.GetCredentials())
 	if err := pkg.ValidateStruct(ctx, creds); err != nil {
 		u.log.Errorf("ValidateStruct: %v", err)
@@ -80,9 +75,6 @@ func (u *UserServer) SignOn(ctx context.Context, request *pbUser.SignOnRequest) 
 }
 
 func (u *UserServer) SignOut(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
-	// span, ctx := opentracing.StartSpanFromContext(ctx, "grpc.UserServer.SignOut")
-	// defer span.Finish()
-
 	// TODO implement me
 	// invalidate session
 	panic("implement me")
