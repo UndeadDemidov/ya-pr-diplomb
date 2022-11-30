@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/models"
+	"github.com/rs/zerolog"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -16,9 +17,8 @@ type BasicAuth struct {
 	Password string `json:"password,omitempty" db:"password"`
 }
 
-// SanitizeCredentials removes password.
-func (ba *BasicAuth) SanitizeCredentials() {
-	ba.Password = ""
+func (ba *BasicAuth) MarshalZerologObject(e *zerolog.Event) {
+	e.Str("email", ba.Email)
 }
 
 // HashPassword hashes password without salt.

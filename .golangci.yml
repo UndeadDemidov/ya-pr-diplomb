@@ -88,3 +88,4 @@ linters:
     - exhaustruct
     - gofumpt
     - wsl
+    - varnamelen

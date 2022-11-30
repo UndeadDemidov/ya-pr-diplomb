@@ -8,33 +8,17 @@ import (
 	"github.com/UndeadDemidov/ya-pr-diplomb/config"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/diode"
+	"github.com/rs/zerolog/log"
 )
 
-// Logger methods interface.
-type Logger interface { //nolint:interfacebloat
-	InitLogger()
-	Debug(args ...interface{})
-	Debugf(template string, args ...interface{})
-	Info(args ...interface{})
-	Infof(template string, args ...interface{})
-	Warn(args ...interface{})
-	Warnf(template string, args ...interface{})
-	Error(args ...interface{})
-	Errorf(template string, args ...interface{})
-	Panic(args ...interface{})
-	Panicf(template string, args ...interface{})
-	Fatal(args ...interface{})
-	Fatalf(template string, args ...interface{})
+type AppLogger struct {
+	zerolog.Logger
+	cfg *config.App
 }
 
-type apiLogger struct {
-	cfg    *config.App
-	logger *zerolog.Logger
-}
-
-// NewAPILogger creates logger.
-func NewAPILogger(cfg *config.App) *apiLogger { //nolint:revive
-	return &apiLogger{cfg: cfg}
+// NewAppLogger creates logger.
+func NewAppLogger(cfg *config.App) *AppLogger {
+	return &AppLogger{cfg: cfg}
 }
 
 // For mapping config logger to app logger levels.
@@ -47,7 +31,7 @@ var loggerLevelMap = map[string]zerolog.Level{ //nolint:gochecknoglobals
 	"fatal": zerolog.FatalLevel,
 }
 
-func (l *apiLogger) getLevel(cfg *config.App) zerolog.Level {
+func (l *AppLogger) getLevel(cfg *config.App) zerolog.Level {
 	level, exist := loggerLevelMap[cfg.Logger.Level]
 	if !exist {
 		return zerolog.DebugLevel
@@ -57,82 +41,78 @@ func (l *apiLogger) getLevel(cfg *config.App) zerolog.Level {
 }
 
 // InitLogger initialization logger.
-func (l *apiLogger) InitLogger() {
+// ToDo заменить на endpoint, который меняет уровень логирования.
+func (l *AppLogger) InitLogger() {
 	zerolog.SetGlobalLevel(l.getLevel(l.cfg))
-
-	var logger zerolog.Logger
-
 	if l.cfg.Logger.Development {
-		logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).
 			With().Timestamp().Caller().Stack().Logger()
 	} else {
 		wr := diode.NewWriter(os.Stdout, 1000, 10*time.Millisecond, func(missed int) { //nolint:gomnd
 			fmt.Printf("Logger Dropped %d messages", missed) //nolint:forbidigo
 		})
-		logger = zerolog.New(wr).With().Timestamp().Logger()
+		log.Logger = log.Output(wr).With().Timestamp().Logger()
 	}
-
-	l.logger = &logger
 }
 
 // Logger methods
 
-func (l *apiLogger) Debug(args ...interface{}) {
-	l.logger.Debug().Msg(fmt.Sprint(args...))
+func (l *AppLogger) Debug(args ...interface{}) {
+	l.Logger.Debug().Msg(fmt.Sprint(args...))
 }
 
-func (l *apiLogger) Debugf(template string, args ...interface{}) {
-	l.logger.Debug().Msg(fmt.Sprintf(template, args...))
+func (l *AppLogger) Debugf(template string, args ...interface{}) {
+	l.Logger.Debug().Msg(fmt.Sprintf(template, args...))
 }
 
-func (l *apiLogger) Info(args ...interface{}) {
-	l.logger.Info().Msg(fmt.Sprint(args...))
+func (l *AppLogger) Info(args ...interface{}) {
+	l.Logger.Info().Msg(fmt.Sprint(args...))
 }
 
-func (l *apiLogger) Infof(template string, args ...interface{}) {
-	l.logger.Info().Msg(fmt.Sprintf(template, args...))
+func (l *AppLogger) Infof(template string, args ...interface{}) {
+	l.Logger.Info().Msg(fmt.Sprintf(template, args...))
 }
 
-func (l *apiLogger) Warn(args ...interface{}) {
-	l.logger.Warn().Msg(fmt.Sprint(args...))
+func (l *AppLogger) Warn(args ...interface{}) {
+	l.Logger.Warn().Msg(fmt.Sprint(args...))
 }
 
-func (l *apiLogger) Warnf(template string, args ...interface{}) {
-	l.logger.Warn().Msg(fmt.Sprintf(template, args...))
+func (l *AppLogger) Warnf(template string, args ...interface{}) {
+	l.Logger.Warn().Msg(fmt.Sprintf(template, args...))
 }
 
-func (l *apiLogger) Error(args ...interface{}) {
-	l.logger.Error().Msg(fmt.Sprint(args...))
+func (l *AppLogger) Error(args ...interface{}) {
+	l.Logger.Error().Msg(fmt.Sprint(args...))
 }
 
-func (l *apiLogger) Errorf(template string, args ...interface{}) {
-	l.logger.Error().Msg(fmt.Sprintf(template, args...))
+func (l *AppLogger) Errorf(template string, args ...interface{}) {
+	l.Logger.Error().Msg(fmt.Sprintf(template, args...))
 }
 
-func (l *apiLogger) Panic(args ...interface{}) {
-	l.logger.Panic().Msg(fmt.Sprint(args...))
+func (l *AppLogger) Panic(args ...interface{}) {
+	l.Logger.Panic().Msg(fmt.Sprint(args...))
 }
 
-func (l *apiLogger) Panicf(template string, args ...interface{}) {
-	l.logger.Panic().Msg(fmt.Sprintf(template, args...))
+func (l *AppLogger) Panicf(template string, args ...interface{}) {
+	l.Logger.Panic().Msg(fmt.Sprintf(template, args...))
 }
 
-func (l *apiLogger) Fatal(args ...interface{}) {
-	l.logger.Fatal().Msg(fmt.Sprint(args...))
+func (l *AppLogger) Fatal(args ...interface{}) {
+	l.Logger.Fatal().Msg(fmt.Sprint(args...))
 }
 
-func (l *apiLogger) Fatalf(template string, args ...interface{}) {
-	l.logger.Fatal().Msg(fmt.Sprintf(template, args...))
+func (l *AppLogger) Fatalf(template string, args ...interface{}) {
+	l.Logger.Fatal().Msg(fmt.Sprintf(template, args...))
 }
 
-func (l *apiLogger) Print(args ...interface{}) {
-	l.logger.Info().Msg(fmt.Sprint(args...))
+func (l *AppLogger) Print(args ...interface{}) {
+	l.Logger.Info().Msg(fmt.Sprint(args...))
 }
 
-func (l *apiLogger) Printf(format string, args ...interface{}) {
-	l.logger.Info().Msg(fmt.Sprintf(format, args...))
+func (l *AppLogger) Printf(format string, args ...interface{}) {
+	l.Logger.Info().Msg(fmt.Sprintf(format, args...))
 }
 
-func (l *apiLogger) Println(args ...interface{}) {
+func (l *AppLogger) Println(args ...interface{}) {
 	l.Print(args...)
 }

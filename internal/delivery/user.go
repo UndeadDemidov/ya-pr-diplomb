@@ -8,6 +8,6 @@ import (
 )
 
 type User interface {
-	SignIn(context.Context, *models.User) error
-	SignOn(context.Context, *auth.BasicAuth) (*models.User, error)
+	SignUp(context.Context, *models.User) error
+	SignIn(context.Context, *auth.BasicAuth) (*models.User, error)
 }

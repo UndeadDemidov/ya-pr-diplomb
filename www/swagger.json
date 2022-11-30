@@ -18,7 +18,7 @@
   "paths": {
     "/v1/auth/signin": {
       "post": {
-        "operationId": "UserService_SignIn",
+        "operationId": "UserService_SignUp",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -36,11 +36,11 @@
         },
         "parameters": [
           {
-            "name": "user",
+            "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/userServiceUser"
+              "$ref": "#/definitions/userServiceSignUpRequest"
             }
           }
         ],
@@ -51,12 +51,12 @@
     },
     "/v1/auth/signon": {
       "post": {
-        "operationId": "UserService_SignOn",
+        "operationId": "UserService_SignIn",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userServiceSignOnResponse"
+              "$ref": "#/definitions/userServiceSignInResponse"
             }
           },
           "default": {
@@ -148,11 +148,25 @@
         "password"
       ]
     },
-    "userServiceSignOnResponse": {
+    "userServiceSignInResponse": {
       "type": "object",
       "properties": {
         "accessToken": {
           "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/userServiceUser"
+        }
+      }
+    },
+    "userServiceSignUpRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/userServiceUser"
+        },
+        "credentials": {
+          "$ref": "#/definitions/userServiceCredentials"
         }
       }
     },
@@ -162,9 +176,6 @@
         "uuid": {
           "type": "string",
           "readOnly": true
-        },
-        "credentials": {
-          "$ref": "#/definitions/userServiceCredentials"
         },
         "createdAt": {
           "type": "string",

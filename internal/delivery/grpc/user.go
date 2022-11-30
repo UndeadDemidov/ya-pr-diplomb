@@ -18,52 +18,55 @@ var _ pbUser.UserServiceServer = (*UserServer)(nil)
 
 type UserServer struct {
 	pbUser.UnimplementedUserServiceServer
-	log        telemetry.Logger
+	log        telemetry.AppLogger
 	cfg        *config.App
 	svc        delivery.User
 	jwtManager auth.JWTManager
 }
 
-func NewUserServer(logger telemetry.Logger, config *config.App, service user.Service) *UserServer {
+func NewUserServer(logger telemetry.AppLogger, config *config.App, service user.Service) *UserServer {
 	return &UserServer{log: logger, cfg: config, svc: &service}
 }
 
-func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) (*emptypb.Empty, error) {
-	usr := signinMsgToUser(request)
+func (u *UserServer) SignUp(ctx context.Context, request *pbUser.SignUpRequest) (*emptypb.Empty, error) {
+	usr := signinReq2User(request)
 	if err := pkg.ValidateStruct(ctx, usr); err != nil {
-		u.log.Errorf("ValidateStruct: %v", err)
+		u.log.Err(err).Msg("pkg.ValidateStruct")
 
 		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "ValidateStruct: %v", err)
 	}
 
-	err := u.svc.SignIn(ctx, usr)
+	err := u.svc.SignUp(ctx, usr)
 	if err != nil {
-		u.log.Errorf("service.SignIn: %v", err)
+		u.log.Err(err).Msg("UserServer.svc.SignUp")
 
-		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "SignIn: %v", err)
+		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "SignUp: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-func (u *UserServer) SignOn(ctx context.Context, request *pbUser.SignOnRequest) (*pbUser.SignOnResponse, error) {
+func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) (*pbUser.SignInResponse, error) {
 	creds := credMsgToBasicAuth(request.GetCredentials())
+	l := u.log.With().Object("creds", creds).Logger()
+	l.Debug().Msg("signon user")
+
 	if err := pkg.ValidateStruct(ctx, creds); err != nil {
-		u.log.Errorf("ValidateStruct: %v", err)
+		l.Err(err).Msg("pkg.ValidateStruct")
 
 		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "ValidateStruct: %v", err)
 	}
 
-	usr, err := u.svc.SignOn(ctx, creds)
+	usr, err := u.svc.SignIn(ctx, creds)
 	if err != nil {
-		u.log.Errorf("service.SignOn: %v", err)
+		l.Err(err).Msg("UserServer.svc.SignIn")
 
-		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "SignOn: %v", err)
+		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "SignIn: %v", err)
 	}
 
 	token, err := u.jwtManager.Generate(usr.UserUUID)
 	if err != nil {
-		u.log.Errorf("jwtManager.Generate: %v", err)
+		l.Err(err).Stringer("user_uuid", usr.UserUUID).Msg("UserServer.jwtManager.Generate")
 
 		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "Generate: %v", err)
 	}
@@ -71,7 +74,9 @@ func (u *UserServer) SignOn(ctx context.Context, request *pbUser.SignOnRequest) 
 	// TODO implement me
 	// create session
 
-	return &pbUser.SignOnResponse{AccessToken: token}, nil
+	l.Debug().Stringer("user_uuid", usr.UserUUID).Msg("user signed on successfully")
+
+	return &pbUser.SignInResponse{AccessToken: token, User: user2ProtoUser(usr)}, nil
 }
 
 func (u *UserServer) SignOut(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {

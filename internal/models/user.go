@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog"
 )
 
 // ToDo generate mock and tests.
@@ -11,7 +12,6 @@ import (
 // Authenticator describes contract for different types of authentication.
 type Authenticator interface {
 	CleanCredentials()
-	SanitizeCredentials()
 }
 
 // User base model.
@@ -22,6 +22,10 @@ type User struct {
 	UpdatedAt time.Time `db:"updated_at" exhaustruct:"optional"`
 }
 
+func (u User) MarshalZerologObject(e *zerolog.Event) {
+	e.Stringer("uuid", u.UserUUID)
+}
+
 // NewUser creates User with credentials.
 func NewUser(auth Authenticator) (usr *User) {
 	auth.CleanCredentials()
@@ -30,9 +34,4 @@ func NewUser(auth Authenticator) (usr *User) {
 		UserUUID: uuid.New(),
 		Auth:     auth,
 	}
-}
-
-// Sanitize removes sensitive info.
-func (u *User) Sanitize() {
-	u.Auth.SanitizeCredentials()
 }

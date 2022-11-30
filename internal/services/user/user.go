@@ -24,7 +24,7 @@ func NewService(repository Persistent) *Service {
 	return &Service{persist: repository}
 }
 
-func (s *Service) SignIn(ctx context.Context, usr *models.User) error {
+func (s *Service) SignUp(ctx context.Context, usr *models.User) error {
 	auth, ok := usr.Auth.(*au.BasicAuth)
 	if !ok {
 		return pkg.ErrInvalidTypeCast
@@ -34,11 +34,15 @@ func (s *Service) SignIn(ctx context.Context, usr *models.User) error {
 	if existsUser != nil || err == nil {
 		return pkg.ErrEmailExists
 	}
+	err = auth.HashPassword()
+	if err != nil {
+		return fmt.Errorf("failed with hash password: %w", err)
+	}
 
 	return s.persist.Create(ctx, usr) //nolint:wrapcheck
 }
 
-func (s *Service) SignOn(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
+func (s *Service) SignIn(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
 	foundUser, err := s.findByEmail(ctx, auth)
 	if err != nil {
 		return nil, fmt.Errorf("given email %s not found: %w", auth.Email, err)
@@ -48,8 +52,6 @@ func (s *Service) SignOn(ctx context.Context, auth *au.BasicAuth) (*models.User,
 	if err != nil {
 		return nil, fmt.Errorf("given password is not valid: %w", err)
 	}
-
-	foundUser.Sanitize()
 
 	return foundUser, nil
 }

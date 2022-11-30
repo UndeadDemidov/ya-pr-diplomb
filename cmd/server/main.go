@@ -35,7 +35,7 @@ func startHTTP() {
 	const timeout = 5
 
 	srv := &http.Server{ //nolint:exhaustruct
-		Addr:         ":8000",
+		Addr:         "localhost:8000",
 		Handler:      mux,
 		ReadTimeout:  timeout * time.Second,
 		WriteTimeout: timeout * time.Second,

@@ -18,12 +18,11 @@ init:
 	@echo Performing go mod init & git submodule add...
 	@go mod init github.com/$(GITHUB)/$(PROJECT_NAME)
 	@git submodule add https://github.com/googleapis/googleapis
+	@brew install golang-migrate
 
 install-tools:
 	@echo Checking tools are installed...
-ifndef PROTOC_INSTALLED
-	$(error "go is not installed, please run 'brew install go'")
-endif
+
 ifndef PROTOC_INSTALLED
 	$(error "protoc is not installed, please run 'brew install protobuf'")
 endif
@@ -88,3 +87,19 @@ lint: build
 	@staticcheck ./...
 	@golint ./...
 	@golangci-lint run
+
+# ==============================================================================
+# Database commands
+
+# make db-migrate SQL_NAME="name_of_sql_file"
+db-migrate:
+	@migrate create -ext sql -dir ./migrations -seq -digits 8 $(SQL_NAME)
+
+db-up:
+	@migrate -source file:./migrations -database "postgres://postgres:postgres@localhost:5432/nikolaydemidov?sslmode=disable" up
+
+db-down:
+	@migrate -source file:./migrations -database "postgres://postgres:postgres@localhost:5432/nikolaydemidov?sslmode=disable" down
+
+db-drop:
+	@migrate -source file:./migrations -database "postgres://postgres:postgres@localhost:5432/nikolaydemidov?sslmode=disable" drop
