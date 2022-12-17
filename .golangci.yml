@@ -89,3 +89,4 @@ linters:
     - gofumpt
     - wsl
     - varnamelen
+    - nlreturn

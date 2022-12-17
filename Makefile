@@ -8,6 +8,7 @@ PGG_INSTALLED := $(shell which protoc-gen-go 2> /dev/null)
 PGGG_INSTALLED := $(shell which protoc-gen-go-grpc 2> /dev/null)
 SS_INSTALLED := $(shell which staticcheck 2> /dev/null)
 GL_INSTALLED := $(shell which golint 2> /dev/null)
+M_INSTALLED := $(shell which migrate 2> /dev/null)
 
 GITHUB=UndeadDemidov
 PROJECT_NAME=$(notdir $(shell pwd))
@@ -58,6 +59,10 @@ ifndef GL_INSTALLED
 	@echo Installing golint...
 	go install golang.org/x/lint/golint@latest
 endif
+ifndef M_INSTALLED
+	@echo Installing golang-migrate...
+	@brew install golang-migrate
+endif
 
 # ==============================================================================
 # Modules support
@@ -88,6 +93,9 @@ lint: build
 	@golint ./...
 	@golangci-lint run
 
+test:
+	@echo Running tests...
+	@go test -v -race -vet=off $$(go list ./... | grep -v /gen_pb/ | grep -v /googleapis/)
 # ==============================================================================
 # Database commands
 

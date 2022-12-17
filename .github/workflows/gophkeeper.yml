@@ -81,4 +81,4 @@ jobs:
             # skip-build-cache: true
 
       - name: Run tests
-        run: go test -race -vet=off ./...
+        run: make test

@@ -57,7 +57,7 @@ func (s *Service) SignIn(ctx context.Context, auth *au.BasicAuth) (*models.User,
 }
 
 func (s *Service) findByEmail(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
-	auth.CleanCredentials()
+	auth.CleanCredentials() // не явная чистка значений
 	foundUser, err := s.persist.FindByEmail(ctx, auth.Email)
 	if err != nil {
 		return nil, err //nolint:wrapcheck

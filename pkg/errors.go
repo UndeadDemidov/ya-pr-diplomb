@@ -15,6 +15,8 @@ var (
 	ErrInvalidTypeCast = errors.New("can't cast interface to given type")
 )
 
+var ErrDumb = errors.New("error for testing purposes")
+
 // ParseGRPCErrStatusCode parses error and get GRPC code.
 func ParseGRPCErrStatusCode(err error) codes.Code {
 	switch {

@@ -13,12 +13,17 @@ import (
 
 type AppLogger struct {
 	zerolog.Logger
-	cfg *config.App
+	cfg *config.Logger
 }
 
 // NewAppLogger creates logger.
-func NewAppLogger(cfg *config.App) *AppLogger {
+func NewAppLogger(cfg *config.Logger) *AppLogger {
 	return &AppLogger{cfg: cfg}
+}
+
+// NewTestAppLogger creates logger for tests.
+func NewTestAppLogger() AppLogger {
+	return AppLogger{cfg: &config.Logger{Development: true, Level: "debug"}}
 }
 
 // For mapping config logger to app logger levels.
@@ -31,8 +36,8 @@ var loggerLevelMap = map[string]zerolog.Level{ //nolint:gochecknoglobals
 	"fatal": zerolog.FatalLevel,
 }
 
-func (l *AppLogger) getLevel(cfg *config.App) zerolog.Level {
-	level, exist := loggerLevelMap[cfg.Logger.Level]
+func (l *AppLogger) getLevel(cfg *config.Logger) zerolog.Level {
+	level, exist := loggerLevelMap[cfg.Level]
 	if !exist {
 		return zerolog.DebugLevel
 	}
@@ -44,14 +49,14 @@ func (l *AppLogger) getLevel(cfg *config.App) zerolog.Level {
 // ToDo заменить на endpoint, который меняет уровень логирования.
 func (l *AppLogger) InitLogger() {
 	zerolog.SetGlobalLevel(l.getLevel(l.cfg))
-	if l.cfg.Logger.Development {
-		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).
+	if l.cfg.Development {
+		l.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr, TimeFormat: time.RFC3339}).
 			With().Timestamp().Caller().Stack().Logger()
 	} else {
 		wr := diode.NewWriter(os.Stdout, 1000, 10*time.Millisecond, func(missed int) { //nolint:gomnd
 			fmt.Printf("Logger Dropped %d messages", missed) //nolint:forbidigo
 		})
-		log.Logger = log.Output(wr).With().Timestamp().Logger()
+		l.Logger = log.Output(wr).With().Timestamp().Logger()
 	}
 }
 

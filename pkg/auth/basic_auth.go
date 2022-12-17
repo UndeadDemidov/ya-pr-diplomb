@@ -17,8 +17,11 @@ type BasicAuth struct {
 	Password string `json:"password,omitempty" db:"password"`
 }
 
-func (ba *BasicAuth) MarshalZerologObject(e *zerolog.Event) {
-	e.Str("email", ba.Email)
+func NewBasicAuth(email, password string) *BasicAuth {
+	ba := BasicAuth{email, password}
+	ba.CleanCredentials()
+
+	return &ba
 }
 
 // HashPassword hashes password without salt.
@@ -52,4 +55,8 @@ func (ba *BasicAuth) CleanCredentials() {
 // ToDo salt must be added.
 func (ba *BasicAuth) saltPassword(password []byte) []byte {
 	return password
+}
+
+func (ba *BasicAuth) MarshalZerologObject(e *zerolog.Event) {
+	e.Str("email", ba.Email)
 }
