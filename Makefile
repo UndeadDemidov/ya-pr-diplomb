@@ -95,7 +95,7 @@ lint: build
 
 test:
 	@echo Running tests...
-	@go test -v -race -vet=off $$(go list ./... | grep -v /gen_pb/ | grep -v /googleapis/)
+	@go test -v -race -vet=off $$(go list ./... | grep -v /gen_pb/ | grep -v /googleapis/ | grep -v /proto/)
 # ==============================================================================
 # Database commands
 

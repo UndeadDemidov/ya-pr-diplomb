@@ -7,7 +7,10 @@ import (
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/models"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	au "github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
+	_ "github.com/golang/mock/mockgen/model" //
 )
+
+//go:generate mockgen -destination=./mocks/mock_persist.go . Persistent
 
 type Persistent interface {
 	Create(context.Context, *models.User) error
@@ -30,11 +33,12 @@ func (s *Service) SignUp(ctx context.Context, usr *models.User) error {
 		return pkg.ErrInvalidTypeCast
 	}
 
-	existsUser, err := s.findByEmail(ctx, auth)
-	if existsUser != nil || err == nil {
+	existsUser, _ := s.findByEmail(ctx, auth)
+	if existsUser != nil {
 		return pkg.ErrEmailExists
 	}
-	err = auth.HashPassword()
+
+	err := auth.HashPassword()
 	if err != nil {
 		return fmt.Errorf("failed with hash password: %w", err)
 	}
