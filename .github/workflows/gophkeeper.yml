@@ -42,10 +42,7 @@ jobs:
         run: go mod verify
 
       - name: Generate
-        run: |
-          go clean -modcache
-          make install-tools
-          go generate -x ./... | grep -v /gen_pb/ | grep -v /googleapis/ | grep -v /pkg)
+        run: make gen
 
       - name: Build
         run: go build -v ./...

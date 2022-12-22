@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 )
 
@@ -21,7 +21,7 @@ type JWTManager struct {
 
 // UserClaims is a custom JWT claims that contains some user's information.
 type UserClaims struct {
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 	UserUUID uuid.NullUUID `json:"userUUID"`
 }
 
@@ -33,8 +33,8 @@ func NewJWTManager(secretKey string, tokenDuration time.Duration) *JWTManager {
 // Generate generates and signs a new token for a user.
 func (manager *JWTManager) Generate(usrUUID uuid.UUID) (token string, err error) {
 	claims := UserClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(manager.tokenDuration).Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: &jwt.NumericDate{Time: time.Now().Add(manager.tokenDuration)},
 		},
 		UserUUID: uuid.NullUUID{
 			UUID:  usrUUID,
