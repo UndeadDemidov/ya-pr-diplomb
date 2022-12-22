@@ -43,8 +43,9 @@ jobs:
 
       - name: Generate
         run: |
+          go clean -modcache
           make install-tools
-          go generate -x ./...
+          go generate -x ./... | grep -v /gen_pb/ | grep -v /googleapis/ | grep -v /pkg)
 
       - name: Build
         run: go build -v ./...
