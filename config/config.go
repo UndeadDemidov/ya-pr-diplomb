@@ -21,6 +21,7 @@ type App struct {
 
 // Server contains configurations variables for GRPC and HTTP servers.
 type Server struct {
+	Mode              string
 	AppVersion        string
 	Port              string
 	PprofPort         string
@@ -45,13 +46,13 @@ type Logger struct {
 
 // Postgres contains configurations variables for postgres database.
 type Postgres struct {
-	PostgresqlHost     string
-	PostgresqlPort     string
-	PostgresqlUser     string
-	PostgresqlPassword string
-	PostgresqlDbname   string
-	PostgresqlSSLMode  bool
-	PgDriver           string
+	Host     string
+	Port     string
+	User     string
+	Password string
+	DBName   string
+	SSLMode  bool
+	Driver   string
 }
 
 // Session contains time to live value for sessions duration.
@@ -118,4 +119,12 @@ func Get(configPath string) (*App, error) {
 	}
 
 	return cfg, nil
+}
+
+// GetPath gets config path for local or docker
+func GetPath(configPath string) string {
+	if configPath == "docker" {
+		return "./config/config-docker"
+	}
+	return "./config/config-local"
 }

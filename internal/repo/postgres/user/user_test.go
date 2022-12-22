@@ -71,7 +71,6 @@ func TestRepository_Create(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			mockPool := pgxpoolmock.NewMockPgxIface(ctrl)
@@ -98,7 +97,6 @@ func TestRepository_Create(t *testing.T) {
 }
 
 func TestRepository_FindByEmail(t *testing.T) {
-	// columns := []string{"uuid", "email", "password", "created_at", "updated_at"}
 	type (
 		fields struct {
 			pool *pgxpoolmock.MockPgxIface
@@ -161,7 +159,6 @@ func TestRepository_FindByEmail(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 			mockPool := pgxpoolmock.NewMockPgxIface(ctrl)

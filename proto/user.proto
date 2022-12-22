@@ -17,12 +17,12 @@ message Credentials {
 
 message User {
   string uuid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  google.protobuf.Timestamp created_at = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  google.protobuf.Timestamp updated_at = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional google.protobuf.Timestamp created_at = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional google.protobuf.Timestamp updated_at = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message SignUpRequest {
-  User user = 1;
+  optional User user = 1;
   Credentials credentials = 2;
 }
 
@@ -38,13 +38,13 @@ message SignInResponse {
 service UserService{
   rpc SignUp(SignUpRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/v1/auth/signin"
+      post: "/v1/auth/signup"
       body: "*" // pass creds in body is safe versus pass them in URL parameters
     };
   }
   rpc SignIn(SignInRequest) returns (SignInResponse) {
     option (google.api.http) = {
-      post: "/v1/auth/signon"
+      post: "/v1/auth/signin"
       body: "credentials" // pass creds in body is safe versus pass them in URL parameters
     };
   }

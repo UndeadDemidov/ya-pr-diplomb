@@ -9,8 +9,10 @@ import (
 	mock_user "github.com/UndeadDemidov/ya-pr-diplomb/internal/services/user/mocks"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
+	au "github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 )
 
 func TestService_SignUp(t *testing.T) {
@@ -109,6 +111,94 @@ func TestService_SignUp(t *testing.T) {
 
 			if err := s.SignUp(context.Background(), tt.args.usr); (err != nil) != tt.wantErr {
 				t.Errorf("SignUp() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestService_SignIn(t *testing.T) {
+	type fields struct {
+		persist *mock_user.MockPersistent
+		usr     *models.User
+	}
+	type args struct {
+		auth *au.BasicAuth
+	}
+	tests := []struct {
+		name    string
+		prepare func(f *fields)
+		args    args
+		found   *models.User
+		wantErr bool
+	}{
+		{
+			name: "signin successfully",
+			prepare: func(f *fields) {
+				gomock.InOrder(
+					f.persist.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(f.usr, nil),
+				)
+			},
+			args: args{auth.NewBasicAuth("test", "test")},
+			found: &models.User{
+				UserUUID:  uuid.MustParse("0ad66d2e-fc9e-4c16-8355-a6b9f89866d7"),
+				Auth:      auth.NewBasicAuth("test", "test"),
+				CreatedAt: time.Unix(1671301348, 0),
+				UpdatedAt: time.Unix(1671301348, 0),
+			},
+			wantErr: false,
+		},
+		{
+			name: "signin failed, user not found",
+			prepare: func(f *fields) {
+				gomock.InOrder(
+					f.persist.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(f.usr, pkg.ErrDumb),
+				)
+			},
+			args:    args{auth.NewBasicAuth("test", "test")},
+			found:   nil,
+			wantErr: true,
+		},
+		{
+			name: "signin failed, password not valid",
+			prepare: func(f *fields) {
+				gomock.InOrder(
+					f.persist.EXPECT().FindByEmail(gomock.Any(), gomock.Any()).Return(f.usr, pkg.ErrDumb),
+				)
+			},
+			args: args{auth.NewBasicAuth("test", "invalid")},
+			found: &models.User{
+				UserUUID:  uuid.MustParse("0ad66d2e-fc9e-4c16-8355-a6b9f89866d7"),
+				Auth:      auth.NewBasicAuth("test", "test"),
+				CreatedAt: time.Unix(1671301348, 0),
+				UpdatedAt: time.Unix(1671301348, 0),
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			p := mock_user.NewMockPersistent(ctrl)
+			f := fields{
+				persist: p,
+				usr:     tt.found,
+			}
+			if tt.prepare != nil {
+				tt.prepare(&f)
+			}
+			s := NewService(p)
+
+			if tt.found != nil {
+				err := tt.found.Auth.(*au.BasicAuth).HashPassword()
+				require.NoError(t, err)
+			}
+
+			_, err := s.SignIn(context.Background(), tt.args.auth)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("SignIn() error = %v, wantErr %v", err, tt.wantErr)
+				return
 			}
 		})
 	}

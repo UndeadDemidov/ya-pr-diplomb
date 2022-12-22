@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/UndeadDemidov/ya-pr-diplomb/internal/delivery"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/models"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	au "github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
@@ -16,6 +17,8 @@ type Persistent interface {
 	Create(context.Context, *models.User) error
 	FindByEmail(ctx context.Context, email string) (*models.User, error)
 }
+
+var _ delivery.User = (*Service)(nil)
 
 type Service struct {
 	// ToDo add authenticator base on context.
@@ -49,12 +52,14 @@ func (s *Service) SignUp(ctx context.Context, usr *models.User) error {
 func (s *Service) SignIn(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
 	foundUser, err := s.findByEmail(ctx, auth)
 	if err != nil {
-		return nil, fmt.Errorf("given email %s not found: %w", auth.Email, err)
+		return nil, pkg.ErrUserNotFound
+		// return nil, fmt.Errorf("given email %s not found: %w", auth.Email, err)
 	}
 
 	err = foundUser.Auth.(*au.BasicAuth).ValidatePassword(auth.Password) //nolint:forcetypeassert
 	if err != nil {
-		return nil, fmt.Errorf("given password is not valid: %w", err)
+		return nil, pkg.ErrUserNotFound
+		// return nil, fmt.Errorf("given password is not valid: %w", err)
 	}
 
 	return foundUser, nil

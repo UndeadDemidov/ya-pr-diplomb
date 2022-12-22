@@ -76,8 +76,9 @@ tidy:
 # Build commands
 
 gen: install-tools
-	@echo Running protoc...
-	@sh ./proto_gen.sh .
+	@echo Running go generate...
+#	@sh ./proto_gen.sh .
+	@go generate -x $$(go list ./... | grep -v /gen_pb/ | grep -v /googleapis/ | grep -v /pkg)
 
 build: gen
 	@echo Building...

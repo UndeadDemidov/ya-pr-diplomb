@@ -90,3 +90,4 @@ linters:
     - wsl
     - varnamelen
     - nlreturn
+    - durationcheck

@@ -13,17 +13,17 @@ import (
 
 type AppLogger struct {
 	zerolog.Logger
-	cfg *config.Logger
+	cfg config.Logger
 }
 
 // NewAppLogger creates logger.
-func NewAppLogger(cfg *config.Logger) *AppLogger {
-	return &AppLogger{cfg: cfg}
+func NewAppLogger(cfg config.Logger) AppLogger {
+	return AppLogger{cfg: cfg}
 }
 
 // NewTestAppLogger creates logger for tests.
 func NewTestAppLogger() AppLogger {
-	return AppLogger{cfg: &config.Logger{Development: true, Level: "debug"}}
+	return AppLogger{cfg: config.Logger{Development: true, Level: "debug"}}
 }
 
 // For mapping config logger to app logger levels.
@@ -36,7 +36,7 @@ var loggerLevelMap = map[string]zerolog.Level{ //nolint:gochecknoglobals
 	"fatal": zerolog.FatalLevel,
 }
 
-func (l *AppLogger) getLevel(cfg *config.Logger) zerolog.Level {
+func (l *AppLogger) getLevel(cfg config.Logger) zerolog.Level {
 	level, exist := loggerLevelMap[cfg.Level]
 	if !exist {
 		return zerolog.DebugLevel

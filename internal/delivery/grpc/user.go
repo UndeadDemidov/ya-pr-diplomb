@@ -30,26 +30,28 @@ func NewUserServer(logger telemetry.AppLogger, config *config.App, service user.
 
 func (u *UserServer) SignUp(ctx context.Context, request *pbUser.SignUpRequest) (*emptypb.Empty, error) {
 	usr := signinReq2User(request)
-	if err := pkg.ValidateStruct(ctx, usr); err != nil {
-		u.log.Err(err).Msg("pkg.ValidateStruct")
+	l := u.log.With().Object("user", usr).Logger()
+	l.Debug().Msg("signup user")
 
+	if err := pkg.ValidateStruct(ctx, usr); err != nil {
+		l.Err(err).Msg("pkg.ValidateStruct")
 		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "ValidateStruct: %v", err)
 	}
 
 	err := u.svc.SignUp(ctx, usr)
 	if err != nil {
-		u.log.Err(err).Msg("UserServer.svc.SignUp")
-
+		l.Err(err).Msg("UserServer.svc.SignUp")
 		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "SignUp: %v", err)
 	}
 
+	l.Debug().Msg("user signed up successfully")
 	return &emptypb.Empty{}, nil
 }
 
 func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) (*pbUser.SignInResponse, error) {
 	creds := credMsgToBasicAuth(request.GetCredentials())
 	l := u.log.With().Object("creds", creds).Logger()
-	l.Debug().Msg("signon user")
+	l.Debug().Msg("signin user")
 
 	if err := pkg.ValidateStruct(ctx, creds); err != nil {
 		l.Err(err).Msg("pkg.ValidateStruct")
@@ -85,7 +87,7 @@ func (u *UserServer) SignOut(ctx context.Context, empty *emptypb.Empty) (*emptyp
 	panic("implement me")
 }
 
-// func (u UserServer) mustEmbedUnimplementedUserServiceServer() {
-// 	// TODO implement me
-// 	panic("implement me")
-// }
+func (u *UserServer) mustEmbedUnimplementedUserServiceServer() { //nolint:unused
+	// TODO implement me
+	panic("implement me")
+}
