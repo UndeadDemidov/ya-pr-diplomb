@@ -27,9 +27,9 @@ install-tools:
 ifndef PROTOC_INSTALLED
 	$(error "protoc is not installed, please run 'brew install protobuf'")
 endif
-ifndef M_INSTALLED
-	$(error "golang-migrate is not installed, please run 'brew install golang-migrate'")
-endif
+#ifndef M_INSTALLED
+#	$(error "golang-migrate is not installed, please run 'brew install golang-migrate'")
+#endif
 ifndef PGG_INSTALLED
 	@echo Installing protoc-gen-go...
 	@go mod tidy
