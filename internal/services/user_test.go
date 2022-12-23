@@ -17,7 +17,7 @@ import (
 
 func TestService_SignUp(t *testing.T) {
 	type fields struct {
-		persist *mock_user.MockPersistent
+		persist *mock_services.MockPersistent
 	}
 	type args struct {
 		usr *models.User
@@ -100,7 +100,7 @@ func TestService_SignUp(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			p := mock_user.NewMockPersistent(ctrl)
+			p := mock_services.NewMockPersistent(ctrl)
 			f := fields{
 				persist: p,
 			}
@@ -118,7 +118,7 @@ func TestService_SignUp(t *testing.T) {
 
 func TestService_SignIn(t *testing.T) {
 	type fields struct {
-		persist *mock_user.MockPersistent
+		persist *mock_services.MockPersistent
 		usr     *models.User
 	}
 	type args struct {
@@ -180,7 +180,7 @@ func TestService_SignIn(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			p := mock_user.NewMockPersistent(ctrl)
+			p := mock_services.NewMockPersistent(ctrl)
 			f := fields{
 				persist: p,
 				usr:     tt.found,
