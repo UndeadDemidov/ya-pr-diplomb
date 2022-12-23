@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 package userService;
-option go_package = ".;userService";
+option go_package = ".;user";
 
 message Credentials {
   string email = 1 [(google.api.field_behavior) = REQUIRED];
