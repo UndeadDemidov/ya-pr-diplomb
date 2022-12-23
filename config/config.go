@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-// ErrConfigFileNotFound error
+// ErrConfigFileNotFound error.
 var ErrConfigFileNotFound = errors.New("config file not found")
 
 // App includes all set of configurations.
@@ -122,7 +122,7 @@ func Get(configPath string) (*App, error) {
 	return cfg, nil
 }
 
-// GetPath gets config path for local or docker
+// GetPath gets config path for local or docker.
 func GetPath(configPath string) string {
 	if configPath == "docker" {
 		return "./config/config-docker"

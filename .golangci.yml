@@ -91,3 +91,4 @@ linters:
     - varnamelen
     - nlreturn
     - durationcheck
+    - gochecknoinits
