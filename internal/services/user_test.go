@@ -9,7 +9,6 @@ import (
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services/mocks"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
-	au "github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
@@ -82,7 +81,7 @@ func TestService_SignUp(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "failed auth cast",
+			name:    "failed au cast",
 			prepare: nil,
 			args: args{
 				&models.User{
@@ -122,7 +121,7 @@ func TestService_SignIn(t *testing.T) {
 		usr     *models.User
 	}
 	type args struct {
-		auth *au.BasicAuth
+		au *auth.BasicAuth
 	}
 	tests := []struct {
 		name    string
@@ -191,11 +190,11 @@ func TestService_SignIn(t *testing.T) {
 			s := NewUser(p)
 
 			if tt.found != nil {
-				err := tt.found.Auth.(*au.BasicAuth).HashPassword()
+				err := tt.found.Auth.(*auth.BasicAuth).HashPassword()
 				require.NoError(t, err)
 			}
 
-			_, err := s.SignIn(context.Background(), tt.args.auth)
+			_, err := s.SignIn(context.Background(), tt.args.au)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("SignIn() error = %v, wantErr %v", err, tt.wantErr)
 				return

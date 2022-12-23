@@ -16,6 +16,7 @@ import (
 
 var _ pbUser.UserServiceServer = (*UserServer)(nil)
 
+// UserServer provides handlers for GRPC server.
 type UserServer struct {
 	pbUser.UnimplementedUserServiceServer
 	log        telemetry.AppLogger
@@ -24,10 +25,12 @@ type UserServer struct {
 	jwtManager auth.JWTManager
 }
 
+// NewUserServer creates new instance of UserServer with given options.
 func NewUserServer(logger telemetry.AppLogger, config *config.App, service services.User) *UserServer {
 	return &UserServer{log: logger, cfg: config, svc: &service}
 }
 
+// SignUp grpc handler for registering new user.
 func (u *UserServer) SignUp(ctx context.Context, request *pbUser.SignUpRequest) (*emptypb.Empty, error) {
 	usr := signinReq2User(request)
 	l := u.log.With().Object("user", usr).Logger()
@@ -48,6 +51,7 @@ func (u *UserServer) SignUp(ctx context.Context, request *pbUser.SignUpRequest) 
 	return &emptypb.Empty{}, nil
 }
 
+// SignIn grpc handler for logging in user.
 func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) (*pbUser.SignInResponse, error) {
 	creds := credMsgToBasicAuth(request.GetCredentials())
 	l := u.log.With().Object("creds", creds).Logger()
@@ -81,13 +85,14 @@ func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) 
 	return &pbUser.SignInResponse{AccessToken: token, User: user2ProtoUser(usr)}, nil
 }
 
+// SignOut grpc handler for logging out user.
 func (u *UserServer) SignOut(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
 	// TODO implement me
 	// invalidate session
 	panic("implement me")
 }
 
-func (u *UserServer) mustEmbedUnimplementedUserServiceServer() { //nolint:unused
-	// TODO implement me
-	panic("implement me")
-}
+// func (u *UserServer) mustEmbedUnimplementedUserServiceServer() { //nolint:unused
+// 	// TODO implement me
+// 	panic("implement me")
+// }

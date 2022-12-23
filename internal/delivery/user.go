@@ -10,6 +10,7 @@ import (
 
 //go:generate mockgen -destination=./mocks/mock_user.go . User
 
+// User interface describes contract for delivery use case.
 type User interface {
 	SignUp(context.Context, *models.User) error
 	SignIn(context.Context, *auth.BasicAuth) (*models.User, error)

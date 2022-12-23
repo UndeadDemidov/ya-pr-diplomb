@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+// ErrConfigFileNotFound error
 var ErrConfigFileNotFound = errors.New("config file not found")
 
 // App includes all set of configurations.

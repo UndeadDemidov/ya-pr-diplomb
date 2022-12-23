@@ -16,6 +16,7 @@ var (
 	ErrInvalidTypeCast = errors.New("can't cast interface to given type")
 )
 
+// ErrDumb is dummy error for tests purpose.
 var ErrDumb = errors.New("error for testing purposes")
 
 // ParseGRPCErrStatusCode parses error and get GRPC code.

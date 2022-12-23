@@ -9,8 +9,10 @@ import (
 )
 
 var (
+	// ErrUnexpectedSignedMeth error.
 	ErrUnexpectedSignedMeth = fmt.Errorf("unexpected token signing method")
-	ErrInvalidTokenClaims   = fmt.Errorf("invalid token claims")
+	// ErrInvalidTokenClaims error.
+	ErrInvalidTokenClaims = fmt.Errorf("invalid token claims")
 )
 
 // JWTManager is a JSON web token manager.

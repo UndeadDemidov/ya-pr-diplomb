@@ -22,6 +22,7 @@ type User struct {
 	UpdatedAt time.Time `db:"updated_at" exhaustruct:"optional"`
 }
 
+// MarshalZerologObject gives context to zerlog logs.
 func (u User) MarshalZerologObject(e *zerolog.Event) {
 	e.Stringer("uuid", u.UserUUID)
 }

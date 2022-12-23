@@ -18,15 +18,18 @@ import (
 
 var _ services.Persistent = (*User)(nil)
 
+// User implements services.Persistent interface for postgres.
 type User struct {
 	log telemetry.AppLogger
 	db  pgxpoolmock.PgxPool
 }
 
+// NewUser creates new instance of User postgres repository.
 func NewUser(database *pgxpool.Pool, logger telemetry.AppLogger) *User {
 	return &User{db: database, log: logger}
 }
 
+// Create is method to create new user in postgres database.
 func (r *User) Create(ctx context.Context, usr *models.User) error {
 	auth, ok := usr.Auth.(*au.BasicAuth)
 	if !ok {
@@ -77,6 +80,7 @@ func (r *User) Create(ctx context.Context, usr *models.User) error {
 	return nil
 }
 
+// FindByEmail returns user with given email as unique id.
 func (r *User) FindByEmail(ctx context.Context, email string) (*models.User, error) {
 	const selectUserQuery = `
 SELECT u.uuid, crd.email, crd.password, u.created_at, u.updated_at

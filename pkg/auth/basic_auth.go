@@ -17,6 +17,7 @@ type BasicAuth struct {
 	Password string `json:"password,omitempty" db:"password"`
 }
 
+// NewBasicAuth creates new instance of BasicAuth.
 func NewBasicAuth(email, password string) *BasicAuth {
 	ba := BasicAuth{email, password}
 	ba.CleanCredentials()
@@ -57,6 +58,7 @@ func (ba *BasicAuth) saltPassword(password []byte) []byte {
 	return password
 }
 
+// MarshalZerologObject gives context to zerlog logs.
 func (ba *BasicAuth) MarshalZerologObject(e *zerolog.Event) {
 	e.Str("email", ba.Email)
 }

@@ -24,6 +24,7 @@ import (
 // https://github.com/grpc-ecosystem/go-grpc-middleware
 // go-grpc-middleware/tracing/opentracing/ - add jaeger
 
+// GRPC server.
 type GRPC struct {
 	logger telemetry.AppLogger
 	cfg    *config.App
@@ -31,6 +32,7 @@ type GRPC struct {
 	srv    *grpc.Server
 }
 
+// NewGRPC creates new instance of GRPC server with given options.
 func NewGRPC(log telemetry.AppLogger, cfg *config.App, db *pgxpool.Pool) *GRPC {
 	g := GRPC{
 		logger: log,
@@ -54,6 +56,8 @@ func NewGRPC(log telemetry.AppLogger, cfg *config.App, db *pgxpool.Pool) *GRPC {
 		MaxConnectionAge:  g.cfg.Server.MaxConnectionAge * time.Minute,
 		Time:              g.cfg.Server.Timeout * time.Minute,
 	}),
+
+		// ToDo implement brutforce protection.
 		// grpc.UnaryInterceptor(im.Logger),
 		grpc.ChainUnaryInterceptor(
 			grpc_ctxtags.UnaryServerInterceptor(),
@@ -72,6 +76,7 @@ func NewGRPC(log telemetry.AppLogger, cfg *config.App, db *pgxpool.Pool) *GRPC {
 	return &g
 }
 
+// Run starts GRPC server with graceful shutdown.
 func (g GRPC) Run() error {
 	l, err := net.Listen("tcp", g.cfg.Server.Port)
 	if err != nil {

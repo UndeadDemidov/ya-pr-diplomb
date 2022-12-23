@@ -11,6 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// AppLogger provides application context zerolog logger.
 type AppLogger struct {
 	zerolog.Logger
 	cfg config.Logger
@@ -62,62 +63,77 @@ func (l *AppLogger) InitLogger() {
 
 // Logger methods
 
+// Debug level message writer.
 func (l *AppLogger) Debug(args ...interface{}) {
 	l.Logger.Debug().Msg(fmt.Sprint(args...))
 }
 
+// Debugf level message writer with formatter.
 func (l *AppLogger) Debugf(template string, args ...interface{}) {
 	l.Logger.Debug().Msg(fmt.Sprintf(template, args...))
 }
 
+// Info level message writer.
 func (l *AppLogger) Info(args ...interface{}) {
 	l.Logger.Info().Msg(fmt.Sprint(args...))
 }
 
+// Infof level message writer with formatter.
 func (l *AppLogger) Infof(template string, args ...interface{}) {
 	l.Logger.Info().Msg(fmt.Sprintf(template, args...))
 }
 
+// Warn level message writer.
 func (l *AppLogger) Warn(args ...interface{}) {
 	l.Logger.Warn().Msg(fmt.Sprint(args...))
 }
 
+// Warnf level message writer with formatter.
 func (l *AppLogger) Warnf(template string, args ...interface{}) {
 	l.Logger.Warn().Msg(fmt.Sprintf(template, args...))
 }
 
+// Error message writer.
 func (l *AppLogger) Error(args ...interface{}) {
 	l.Logger.Error().Msg(fmt.Sprint(args...))
 }
 
+// Errorf message writer with formatter.
 func (l *AppLogger) Errorf(template string, args ...interface{}) {
 	l.Logger.Error().Msg(fmt.Sprintf(template, args...))
 }
 
+// Panic message writer.
 func (l *AppLogger) Panic(args ...interface{}) {
 	l.Logger.Panic().Msg(fmt.Sprint(args...))
 }
 
+// Panicf message writer with formatter.
 func (l *AppLogger) Panicf(template string, args ...interface{}) {
 	l.Logger.Panic().Msg(fmt.Sprintf(template, args...))
 }
 
+// Fatal message writer.
 func (l *AppLogger) Fatal(args ...interface{}) {
 	l.Logger.Fatal().Msg(fmt.Sprint(args...))
 }
 
+// Fatalf message writer with formatter.
 func (l *AppLogger) Fatalf(template string, args ...interface{}) {
 	l.Logger.Fatal().Msg(fmt.Sprintf(template, args...))
 }
 
+// Print writes log message with info level.
 func (l *AppLogger) Print(args ...interface{}) {
 	l.Logger.Info().Msg(fmt.Sprint(args...))
 }
 
+// Printf writes log message with info level and formatter.
 func (l *AppLogger) Printf(format string, args ...interface{}) {
 	l.Logger.Info().Msg(fmt.Sprintf(format, args...))
 }
 
+// Println writes log message with info level.
 func (l *AppLogger) Println(args ...interface{}) {
 	l.Print(args...)
 }
