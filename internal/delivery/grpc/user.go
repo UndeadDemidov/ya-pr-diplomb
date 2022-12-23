@@ -6,7 +6,7 @@ import (
 	"github.com/UndeadDemidov/ya-pr-diplomb/config"
 	pbUser "github.com/UndeadDemidov/ya-pr-diplomb/gen_pb/user"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/delivery"
-	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services/user"
+	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/telemetry"
@@ -24,7 +24,7 @@ type UserServer struct {
 	jwtManager auth.JWTManager
 }
 
-func NewUserServer(logger telemetry.AppLogger, config *config.App, service user.Service) *UserServer {
+func NewUserServer(logger telemetry.AppLogger, config *config.App, service services.User) *UserServer {
 	return &UserServer{log: logger, cfg: config, svc: &service}
 }
 

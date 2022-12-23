@@ -11,8 +11,8 @@ import (
 	"github.com/UndeadDemidov/ya-pr-diplomb/config"
 	pbUser "github.com/UndeadDemidov/ya-pr-diplomb/gen_pb/user"
 	deliveryGRPC "github.com/UndeadDemidov/ya-pr-diplomb/internal/delivery/grpc"
-	user2 "github.com/UndeadDemidov/ya-pr-diplomb/internal/repo/postgres/user"
-	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services/user"
+	"github.com/UndeadDemidov/ya-pr-diplomb/internal/repo/postgres"
+	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/telemetry"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -67,7 +67,7 @@ func NewGRPC(log telemetry.AppLogger, cfg *config.App, db *pgxpool.Pool) *GRPC {
 	}
 
 	pbUser.RegisterUserServiceServer(g.srv,
-		deliveryGRPC.NewUserServer(g.logger, g.cfg, *user.NewService(user2.NewRepository(g.db, g.logger))))
+		deliveryGRPC.NewUserServer(g.logger, g.cfg, *services.NewUser(postgres.NewUser(g.db, g.logger))))
 
 	return &g
 }

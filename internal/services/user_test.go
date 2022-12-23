@@ -1,4 +1,4 @@
-package user
+package services
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/models"
-	mock_user "github.com/UndeadDemidov/ya-pr-diplomb/internal/services/user/mocks"
+	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services/mocks"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 	au "github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
@@ -107,7 +107,7 @@ func TestService_SignUp(t *testing.T) {
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
-			s := NewService(p)
+			s := NewUser(p)
 
 			if err := s.SignUp(context.Background(), tt.args.usr); (err != nil) != tt.wantErr {
 				t.Errorf("SignUp() error = %v, wantErr %v", err, tt.wantErr)
@@ -188,7 +188,7 @@ func TestService_SignIn(t *testing.T) {
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
-			s := NewService(p)
+			s := NewUser(p)
 
 			if tt.found != nil {
 				err := tt.found.Auth.(*au.BasicAuth).HashPassword()

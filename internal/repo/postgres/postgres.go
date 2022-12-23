@@ -11,8 +11,8 @@ import (
 
 const connTimeout = 5
 
-// NewPostgresDB returns new Postgresql db instance.
-func NewPostgresDB(c config.Postgres) (*pgxpool.Pool, error) {
+// NewDB returns new Postgresql db instance.
+func NewDB(c config.Postgres) (*pgxpool.Pool, error) {
 	connStr := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
 		c.Host,
 		c.Port,

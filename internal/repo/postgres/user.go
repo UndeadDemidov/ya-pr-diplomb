@@ -1,4 +1,4 @@
-package user
+package postgres
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/models"
-	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services/user"
+	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	au "github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/telemetry"
@@ -16,18 +16,18 @@ import (
 	"github.com/spacetab-io/pgxpoolmock"
 )
 
-var _ user.Persistent = (*Repository)(nil)
+var _ services.Persistent = (*User)(nil)
 
-type Repository struct {
+type User struct {
 	log telemetry.AppLogger
 	db  pgxpoolmock.PgxPool
 }
 
-func NewRepository(database *pgxpool.Pool, logger telemetry.AppLogger) *Repository {
-	return &Repository{db: database, log: logger}
+func NewUser(database *pgxpool.Pool, logger telemetry.AppLogger) *User {
+	return &User{db: database, log: logger}
 }
 
-func (r *Repository) Create(ctx context.Context, usr *models.User) error {
+func (r *User) Create(ctx context.Context, usr *models.User) error {
 	auth, ok := usr.Auth.(*au.BasicAuth)
 	if !ok {
 		return pkg.ErrInvalidTypeCast
@@ -77,7 +77,7 @@ func (r *Repository) Create(ctx context.Context, usr *models.User) error {
 	return nil
 }
 
-func (r *Repository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *User) FindByEmail(ctx context.Context, email string) (*models.User, error) {
 	const selectUserQuery = `
 SELECT u.uuid, crd.email, crd.password, u.created_at, u.updated_at
   FROM gophkeeper.credentials crd

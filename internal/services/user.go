@@ -1,4 +1,4 @@
-package user
+package services
 
 import (
 	"context"
@@ -11,26 +11,26 @@ import (
 	_ "github.com/golang/mock/mockgen/model" //
 )
 
-//go:generate mockgen -destination=./mocks/mock_persist.go . Persistent
+//go:generate mockgen -destination=./mocks/mock_user.go . Persistent
 
 type Persistent interface {
 	Create(context.Context, *models.User) error
 	FindByEmail(ctx context.Context, email string) (*models.User, error)
 }
 
-var _ delivery.User = (*Service)(nil)
+var _ delivery.User = (*User)(nil)
 
-type Service struct {
+type User struct {
 	// ToDo add authenticator base on context.
 	// https://github.com/johanbrandhorst/grpc-auth-example
 	persist Persistent
 }
 
-func NewService(repository Persistent) *Service {
-	return &Service{persist: repository}
+func NewUser(repository Persistent) *User {
+	return &User{persist: repository}
 }
 
-func (s *Service) SignUp(ctx context.Context, usr *models.User) error {
+func (s *User) SignUp(ctx context.Context, usr *models.User) error {
 	auth, ok := usr.Auth.(*au.BasicAuth)
 	if !ok {
 		return pkg.ErrInvalidTypeCast
@@ -49,7 +49,7 @@ func (s *Service) SignUp(ctx context.Context, usr *models.User) error {
 	return s.persist.Create(ctx, usr) //nolint:wrapcheck
 }
 
-func (s *Service) SignIn(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
+func (s *User) SignIn(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
 	foundUser, err := s.findByEmail(ctx, auth)
 	if err != nil {
 		return nil, pkg.ErrUserNotFound
@@ -65,7 +65,7 @@ func (s *Service) SignIn(ctx context.Context, auth *au.BasicAuth) (*models.User,
 	return foundUser, nil
 }
 
-func (s *Service) findByEmail(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
+func (s *User) findByEmail(ctx context.Context, auth *au.BasicAuth) (*models.User, error) {
 	auth.CleanCredentials() // не явная чистка значений
 	foundUser, err := s.persist.FindByEmail(ctx, auth.Email)
 	if err != nil {

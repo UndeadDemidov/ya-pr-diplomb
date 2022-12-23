@@ -1,4 +1,4 @@
-package user
+package postgres
 
 import (
 	"context"
@@ -84,7 +84,7 @@ func TestRepository_Create(t *testing.T) {
 				tt.prepare(&fields{pool: mockPool, tx: tx})
 			}
 
-			r := &Repository{
+			r := &User{
 				log: telemetry.NewTestAppLogger(),
 				db:  mockPool,
 			}
@@ -167,7 +167,7 @@ func TestRepository_FindByEmail(t *testing.T) {
 				tt.prepare(&fields{pool: mockPool})
 			}
 
-			r := &Repository{
+			r := &User{
 				log: telemetry.NewTestAppLogger(),
 				db:  mockPool,
 			}

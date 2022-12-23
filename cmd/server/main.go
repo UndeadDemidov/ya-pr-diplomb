@@ -30,14 +30,18 @@ func main() {
 	)
 	appLogger.Infof("Success parsed config: %#v", cfg.Server.AppVersion)
 
-	db, err := postgres.NewPostgresDB(cfg.Postgres)
+	db, err := postgres.NewDB(cfg.Postgres)
 	if err != nil {
 		appLogger.Fatalf("Postgresql init: %s", err)
 	}
 	defer db.Close()
 
 	grpcSrv := servers.NewGRPC(appLogger, cfg, db)
-	appLogger.Fatal(grpcSrv.Run())
+	err = grpcSrv.Run()
+	if err != nil {
+		appLogger.Fatal(err)
+	}
+	log.Println("Stopped gophkeeper")
 
 	// go startHTTP()
 	//
