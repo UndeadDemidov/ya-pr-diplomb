@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/UndeadDemidov/ya-pr-diplomb/config"
-	pbUser "github.com/UndeadDemidov/ya-pr-diplomb/gen_pb/user"
+	"github.com/UndeadDemidov/ya-pr-diplomb/gen_pb"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/delivery"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
@@ -14,11 +14,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-var _ pbUser.UserServiceServer = (*UserServer)(nil)
+var _ gen_pb.UserServiceServer = (*UserServer)(nil)
 
 // UserServer provides handlers for GRPC server.
 type UserServer struct {
-	pbUser.UnimplementedUserServiceServer
+	gen_pb.UnimplementedUserServiceServer
 	log        telemetry.AppLogger
 	cfg        *config.App
 	svc        delivery.User
@@ -31,7 +31,7 @@ func NewUserServer(logger telemetry.AppLogger, config *config.App, service servi
 }
 
 // SignUp grpc handler for registering new user.
-func (u *UserServer) SignUp(ctx context.Context, request *pbUser.SignUpRequest) (*emptypb.Empty, error) {
+func (u *UserServer) SignUp(ctx context.Context, request *gen_pb.SignUpRequest) (*emptypb.Empty, error) {
 	usr := signinReq2User(request)
 	l := u.log.With().Object("user", usr).Logger()
 	l.Debug().Msg("signup user")
@@ -52,7 +52,7 @@ func (u *UserServer) SignUp(ctx context.Context, request *pbUser.SignUpRequest) 
 }
 
 // SignIn grpc handler for logging in user.
-func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) (*pbUser.SignInResponse, error) {
+func (u *UserServer) SignIn(ctx context.Context, request *gen_pb.SignInRequest) (*gen_pb.SignInResponse, error) {
 	creds := credMsgToBasicAuth(request.GetCredentials())
 	l := u.log.With().Object("creds", creds).Logger()
 	l.Debug().Msg("signin user")
@@ -82,7 +82,7 @@ func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) 
 
 	l.Debug().Stringer("user_uuid", usr.UserUUID).Msg("user signed on successfully")
 
-	return &pbUser.SignInResponse{AccessToken: token, User: user2ProtoUser(usr)}, nil
+	return &gen_pb.SignInResponse{AccessToken: token, User: user2ProtoUser(usr)}, nil
 }
 
 // SignOut grpc handler for logging out user.

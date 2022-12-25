@@ -20,3 +20,7 @@
 
 # googleapis issue - prevent big size of project
 googleapis/
+
+# temp gen files
+gen/*
+!gen/.keep

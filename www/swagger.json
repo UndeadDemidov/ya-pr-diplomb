@@ -7,6 +7,9 @@
   "tags": [
     {
       "name": "UserService"
+    },
+    {
+      "name": "DataService"
     }
   ],
   "consumes": [
@@ -16,6 +19,64 @@
     "application/json"
   ],
   "paths": {
+    "/v1/all/{machineId}": {
+      "get": {
+        "operationId": "DataService_GetAllUnary",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/gophkeeperGetAllResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataService"
+        ]
+      },
+      "post": {
+        "operationId": "DataService_PutAllChangedUnary",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/gophkeeperPutAllChangedResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataService"
+        ]
+      }
+    },
     "/v1/auth/signin": {
       "post": {
         "operationId": "UserService_SignIn",
@@ -23,7 +84,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/userServiceSignInResponse"
+              "$ref": "#/definitions/gophkeeperSignInResponse"
             }
           },
           "default": {
@@ -39,7 +100,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/userServiceCredentials"
+              "$ref": "#/definitions/gophkeeperCredentials"
             }
           }
         ],
@@ -95,7 +156,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/userServiceSignUpRequest"
+              "$ref": "#/definitions/gophkeeperSignUpRequest"
             }
           }
         ],
@@ -103,9 +164,370 @@
           "UserService"
         ]
       }
+    },
+    "/v1/list/{machineId}": {
+      "get": {
+        "operationId": "DataService_GetListUnary",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/gophkeeperGetListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DataService"
+        ]
+      }
+    },
+    "/v1/single/{machineId}": {
+      "get": {
+        "operationId": "DataService_GetSingleUnary",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/gophkeeperGetSingleResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "machineId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "md.uuid",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "md.name",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "md.description",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "md.type",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "ACCOUNT",
+              "TEXT",
+              "BINARY",
+              "CREDIT_CARD"
+            ],
+            "default": "ACCOUNT"
+          },
+          {
+            "name": "md.createdAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "md.updatedAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "md.deletedAt",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "tags": [
+          "DataService"
+        ]
+      }
     }
   },
   "definitions": {
+    "gophkeeperAccount": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "gophkeeperBinary": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "gophkeeperCOMMAND": {
+      "type": "string",
+      "enum": [
+        "RETURN",
+        "CREATE",
+        "CHANGE",
+        "DELETE"
+      ],
+      "default": "RETURN"
+    },
+    "gophkeeperCollision": {
+      "type": "object",
+      "properties": {
+        "old": {
+          "$ref": "#/definitions/gophkeeperMetaData"
+        },
+        "new": {
+          "$ref": "#/definitions/gophkeeperMetaData"
+        },
+        "machineId": {
+          "type": "string",
+          "title": "which got collision"
+        }
+      }
+    },
+    "gophkeeperCredentials": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email",
+        "password"
+      ]
+    },
+    "gophkeeperCreditCard": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "validThru": {
+          "type": "string"
+        },
+        "cvc": {
+          "type": "string"
+        }
+      }
+    },
+    "gophkeeperDATA_TYPE": {
+      "type": "string",
+      "enum": [
+        "ACCOUNT",
+        "TEXT",
+        "BINARY",
+        "CREDIT_CARD"
+      ],
+      "default": "ACCOUNT"
+    },
+    "gophkeeperData": {
+      "type": "object",
+      "properties": {
+        "md": {
+          "$ref": "#/definitions/gophkeeperMetaData"
+        },
+        "sm": {
+          "$ref": "#/definitions/gophkeeperSyncMarker"
+        },
+        "command": {
+          "$ref": "#/definitions/gophkeeperCOMMAND"
+        },
+        "account": {
+          "$ref": "#/definitions/gophkeeperAccount"
+        },
+        "text": {
+          "$ref": "#/definitions/gophkeeperText"
+        },
+        "binary": {
+          "$ref": "#/definitions/gophkeeperBinary"
+        },
+        "card": {
+          "$ref": "#/definitions/gophkeeperCreditCard"
+        }
+      }
+    },
+    "gophkeeperGetAllResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/gophkeeperData"
+          }
+        }
+      }
+    },
+    "gophkeeperGetListResponse": {
+      "type": "object",
+      "properties": {
+        "md": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/gophkeeperMetaData"
+          }
+        }
+      }
+    },
+    "gophkeeperGetSingleResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/gophkeeperData"
+        }
+      }
+    },
+    "gophkeeperMetaData": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/gophkeeperDATA_TYPE"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deletedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "gophkeeperPutAllChangedResponse": {
+      "type": "object",
+      "properties": {
+        "collision": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/gophkeeperCollision"
+          }
+        }
+      }
+    },
+    "gophkeeperSignInResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/gophkeeperUser"
+        }
+      }
+    },
+    "gophkeeperSignUpRequest": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/gophkeeperUser"
+        },
+        "credentials": {
+          "$ref": "#/definitions/gophkeeperCredentials"
+        }
+      }
+    },
+    "gophkeeperSyncMarker": {
+      "type": "object",
+      "properties": {
+        "oldSyncUuid": {
+          "type": "string"
+        },
+        "newSyncUuid": {
+          "type": "string"
+        }
+      }
+    },
+    "gophkeeperText": {
+      "type": "object",
+      "properties": {
+        "fileName": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "gophkeeperUser": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "readOnly": true
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -130,62 +552,6 @@
           "items": {
             "$ref": "#/definitions/protobufAny"
           }
-        }
-      }
-    },
-    "userServiceCredentials": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "email",
-        "password"
-      ]
-    },
-    "userServiceSignInResponse": {
-      "type": "object",
-      "properties": {
-        "accessToken": {
-          "type": "string"
-        },
-        "user": {
-          "$ref": "#/definitions/userServiceUser"
-        }
-      }
-    },
-    "userServiceSignUpRequest": {
-      "type": "object",
-      "properties": {
-        "user": {
-          "$ref": "#/definitions/userServiceUser"
-        },
-        "credentials": {
-          "$ref": "#/definitions/userServiceCredentials"
-        }
-      }
-    },
-    "userServiceUser": {
-      "type": "object",
-      "properties": {
-        "uuid": {
-          "type": "string",
-          "readOnly": true
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "readOnly": true
-        },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "readOnly": true
         }
       }
     }

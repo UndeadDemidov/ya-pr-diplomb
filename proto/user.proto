@@ -7,8 +7,8 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
-package userService;
-option go_package = ".;user";
+package gophkeeper;
+option go_package = ".;gen_pb";
 
 message Credentials {
   string email = 1 [(google.api.field_behavior) = REQUIRED];

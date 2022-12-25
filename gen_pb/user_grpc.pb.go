@@ -4,7 +4,7 @@
 // - protoc             v3.19.4
 // source: user.proto
 
-package user
+package gen_pb
 
 import (
 	context "context"
@@ -38,7 +38,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 
 func (c *userServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/userService.UserService/SignUp", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gophkeeper.UserService/SignUp", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (c *userServiceClient) SignUp(ctx context.Context, in *SignUpRequest, opts 
 
 func (c *userServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts ...grpc.CallOption) (*SignInResponse, error) {
 	out := new(SignInResponse)
-	err := c.cc.Invoke(ctx, "/userService.UserService/SignIn", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gophkeeper.UserService/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *userServiceClient) SignIn(ctx context.Context, in *SignInRequest, opts 
 
 func (c *userServiceClient) SignOut(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/userService.UserService/SignOut", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/gophkeeper.UserService/SignOut", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func _UserService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userService.UserService/SignUp",
+		FullMethod: "/gophkeeper.UserService/SignUp",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).SignUp(ctx, req.(*SignUpRequest))
@@ -127,7 +127,7 @@ func _UserService_SignIn_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userService.UserService/SignIn",
+		FullMethod: "/gophkeeper.UserService/SignIn",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).SignIn(ctx, req.(*SignInRequest))
@@ -145,7 +145,7 @@ func _UserService_SignOut_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/userService.UserService/SignOut",
+		FullMethod: "/gophkeeper.UserService/SignOut",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).SignOut(ctx, req.(*emptypb.Empty))
@@ -157,7 +157,7 @@ func _UserService_SignOut_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "userService.UserService",
+	ServiceName: "gophkeeper.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

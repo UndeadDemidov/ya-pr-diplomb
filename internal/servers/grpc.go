@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/UndeadDemidov/ya-pr-diplomb/config"
-	pbUser "github.com/UndeadDemidov/ya-pr-diplomb/gen_pb/user"
+	"github.com/UndeadDemidov/ya-pr-diplomb/gen_pb"
 	deliveryGRPC "github.com/UndeadDemidov/ya-pr-diplomb/internal/delivery/grpc"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/repo/postgres"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services"
@@ -70,7 +70,7 @@ func NewGRPC(log telemetry.AppLogger, cfg *config.App, db *pgxpool.Pool) *GRPC {
 		reflection.Register(g.srv)
 	}
 
-	pbUser.RegisterUserServiceServer(g.srv,
+	gen_pb.RegisterUserServiceServer(g.srv,
 		deliveryGRPC.NewUserServer(g.logger, g.cfg, *services.NewUser(postgres.NewUser(g.db, g.logger))))
 
 	return &g

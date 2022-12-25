@@ -2,11 +2,11 @@
 // source: user.proto
 
 /*
-Package user is a reverse proxy.
+Package gen_pb is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package user
+package gen_pb
 
 import (
 	"context"
@@ -132,7 +132,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/userService.UserService/SignUp", runtime.WithHTTPPathPattern("/v1/auth/signup"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/gophkeeper.UserService/SignUp", runtime.WithHTTPPathPattern("/v1/auth/signup"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -157,7 +157,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/userService.UserService/SignIn", runtime.WithHTTPPathPattern("/v1/auth/signin"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/gophkeeper.UserService/SignIn", runtime.WithHTTPPathPattern("/v1/auth/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -182,7 +182,7 @@ func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/userService.UserService/SignOut", runtime.WithHTTPPathPattern("/v1/auth/signout"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/gophkeeper.UserService/SignOut", runtime.WithHTTPPathPattern("/v1/auth/signout"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -246,7 +246,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/userService.UserService/SignUp", runtime.WithHTTPPathPattern("/v1/auth/signup"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/gophkeeper.UserService/SignUp", runtime.WithHTTPPathPattern("/v1/auth/signup"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -268,7 +268,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/userService.UserService/SignIn", runtime.WithHTTPPathPattern("/v1/auth/signin"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/gophkeeper.UserService/SignIn", runtime.WithHTTPPathPattern("/v1/auth/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -290,7 +290,7 @@ func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/userService.UserService/SignOut", runtime.WithHTTPPathPattern("/v1/auth/signout"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/gophkeeper.UserService/SignOut", runtime.WithHTTPPathPattern("/v1/auth/signout"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
