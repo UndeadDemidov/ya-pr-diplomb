@@ -1,4 +1,4 @@
-![Build Status](https://github.com/UndeadDemidov/ya-pr-diplomb/workflows/CI/badge.svg)
+![Audit Status](https://github.com/UndeadDemidov/ya-pr-diplomb/actions/workflows/gophkeeper.yml/badge.svg)
 
 # ya-pr-diplomb
 
