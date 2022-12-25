@@ -21,6 +21,21 @@ jobs:
           cache: true
       - run: go version
 
+      - name: Cache go tools
+        id: cache-go-tools
+        uses: actions/cache@v3
+        with:
+          path: |
+            /usr/bin/protoc
+          key: ${{ runner.os }}-go-tools
+
+      - name: Install go-tools
+        if: steps.cache-go-tools.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+          protoc --version
+
       - name: Cache googleapis repo
         id: cache-googleapis
         uses: actions/cache@v3
@@ -42,18 +57,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: Install protobuf
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler
-          protoc --version
-          which protoc
-
       - name: Verify dependencies
         run: go mod verify
 
       - name: Generate
-        run: make gen
+        run: |
+          make gen
+          which protoc-gen-grpc-gateway
+          which protoc-gen-openapiv2
+          which protoc-gen-go
+          which protoc-gen-go-grpc
+          which mockgen
+          which staticcheck
+          which golint
 
       - name: Build
         run: go build -v ./...
