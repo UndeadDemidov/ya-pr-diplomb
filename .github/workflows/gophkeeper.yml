@@ -20,6 +20,7 @@ jobs:
           check-latest: true
           cache: true
       - run: go version
+      - run: ls /home/runner/go/bin
 
       - name: Cache go tools
         id: cache-go-tools
@@ -27,6 +28,7 @@ jobs:
         with:
           path: |
             /usr/bin/protoc
+            /home/runner/go/bin
           key: ${{ runner.os }}-go-tools
 
       - name: Install go-tools
@@ -35,6 +37,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler
           protoc --version
+          make install-tools
 
       - name: Cache googleapis repo
         id: cache-googleapis
@@ -46,16 +49,6 @@ jobs:
       - name: Git submodule googleapis
         if: steps.cache-googleapis.outputs.cache-hit != 'true'
         run: git submodule add --force https://github.com/googleapis/googleapis
-
-      - name: Cache modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
 
       - name: Verify dependencies
         run: go mod verify
