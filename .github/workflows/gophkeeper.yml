@@ -14,10 +14,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.19'
+          check-latest: true
+          cache: true
+      - run: go version
 
       - name: Cache googleapis repo
         id: cache-googleapis
-        uses: actions/cache@v3.0.5
+        uses: actions/cache@v3
         with:
           path: googleapis
           key: ${{ runner.os }}-googleapis
@@ -26,17 +32,22 @@ jobs:
         if: steps.cache-googleapis.outputs.cache-hit != 'true'
         run: git submodule add --force https://github.com/googleapis/googleapis
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
+      - name: Cache modules
+        uses: actions/cache@v3
         with:
-          go-version: '1.19'
-          check-latest: true
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
 
       - name: Install protobuf
         run: |
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler
           protoc --version
+          which protoc
 
       - name: Verify dependencies
         run: go mod verify
