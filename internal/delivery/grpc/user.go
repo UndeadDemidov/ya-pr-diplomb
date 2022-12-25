@@ -6,7 +6,7 @@ import (
 	"github.com/UndeadDemidov/ya-pr-diplomb/config"
 	pbUser "github.com/UndeadDemidov/ya-pr-diplomb/gen_pb/user"
 	"github.com/UndeadDemidov/ya-pr-diplomb/internal/delivery"
-	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services/user"
+	"github.com/UndeadDemidov/ya-pr-diplomb/internal/services"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/auth"
 	"github.com/UndeadDemidov/ya-pr-diplomb/pkg/telemetry"
@@ -16,6 +16,7 @@ import (
 
 var _ pbUser.UserServiceServer = (*UserServer)(nil)
 
+// UserServer provides handlers for GRPC server.
 type UserServer struct {
 	pbUser.UnimplementedUserServiceServer
 	log        telemetry.AppLogger
@@ -24,32 +25,37 @@ type UserServer struct {
 	jwtManager auth.JWTManager
 }
 
-func NewUserServer(logger telemetry.AppLogger, config *config.App, service user.Service) *UserServer {
+// NewUserServer creates new instance of UserServer with given options.
+func NewUserServer(logger telemetry.AppLogger, config *config.App, service services.User) *UserServer {
 	return &UserServer{log: logger, cfg: config, svc: &service}
 }
 
+// SignUp grpc handler for registering new user.
 func (u *UserServer) SignUp(ctx context.Context, request *pbUser.SignUpRequest) (*emptypb.Empty, error) {
 	usr := signinReq2User(request)
-	if err := pkg.ValidateStruct(ctx, usr); err != nil {
-		u.log.Err(err).Msg("pkg.ValidateStruct")
+	l := u.log.With().Object("user", usr).Logger()
+	l.Debug().Msg("signup user")
 
+	if err := pkg.ValidateStruct(ctx, usr); err != nil {
+		l.Err(err).Msg("pkg.ValidateStruct")
 		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "ValidateStruct: %v", err)
 	}
 
 	err := u.svc.SignUp(ctx, usr)
 	if err != nil {
-		u.log.Err(err).Msg("UserServer.svc.SignUp")
-
+		l.Err(err).Msg("UserServer.svc.SignUp")
 		return nil, status.Errorf(pkg.ParseGRPCErrStatusCode(err), "SignUp: %v", err)
 	}
 
+	l.Debug().Msg("user signed up successfully")
 	return &emptypb.Empty{}, nil
 }
 
+// SignIn grpc handler for logging in user.
 func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) (*pbUser.SignInResponse, error) {
 	creds := credMsgToBasicAuth(request.GetCredentials())
 	l := u.log.With().Object("creds", creds).Logger()
-	l.Debug().Msg("signon user")
+	l.Debug().Msg("signin user")
 
 	if err := pkg.ValidateStruct(ctx, creds); err != nil {
 		l.Err(err).Msg("pkg.ValidateStruct")
@@ -79,13 +85,14 @@ func (u *UserServer) SignIn(ctx context.Context, request *pbUser.SignInRequest) 
 	return &pbUser.SignInResponse{AccessToken: token, User: user2ProtoUser(usr)}, nil
 }
 
+// SignOut grpc handler for logging out user.
 func (u *UserServer) SignOut(ctx context.Context, empty *emptypb.Empty) (*emptypb.Empty, error) {
 	// TODO implement me
 	// invalidate session
 	panic("implement me")
 }
 
-// func (u UserServer) mustEmbedUnimplementedUserServiceServer() {
+// func (u *UserServer) mustEmbedUnimplementedUserServiceServer() { //nolint:unused
 // 	// TODO implement me
 // 	panic("implement me")
 // }

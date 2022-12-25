@@ -20,7 +20,3 @@
 
 # googleapis issue - prevent big size of project
 googleapis/
-
-# Generated files during builds
-gen_pb/user
-!gen_pb/user/.keep

@@ -90,3 +90,5 @@ linters:
     - wsl
     - varnamelen
     - nlreturn
+    - durationcheck
+    - gochecknoinits

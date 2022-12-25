@@ -12,9 +12,11 @@ import (
 // Service errors.
 var (
 	ErrEmailExists     = errors.New("email already exists")
+	ErrUserNotFound    = errors.New("user not found with given pair login and password")
 	ErrInvalidTypeCast = errors.New("can't cast interface to given type")
 )
 
+// ErrDumb is dummy error for tests purpose.
 var ErrDumb = errors.New("error for testing purposes")
 
 // ParseGRPCErrStatusCode parses error and get GRPC code.
@@ -30,6 +32,8 @@ func ParseGRPCErrStatusCode(err error) codes.Code {
 		return codes.DeadlineExceeded
 	case errors.Is(err, ErrEmailExists):
 		return codes.AlreadyExists
+	case errors.Is(err, ErrUserNotFound):
+		return codes.NotFound
 	// case errors.Is(err, ErrNoCtxMetaData):
 	// 	return codes.Unauthenticated
 	// case errors.Is(err, ErrInvalidSessionId):

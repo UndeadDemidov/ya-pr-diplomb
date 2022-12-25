@@ -6,6 +6,7 @@ PGGGW_INSTALLED := $(shell which protoc-gen-grpc-gateway 2> /dev/null)
 PGOA_INSTALLED := $(shell which protoc-gen-openapiv2 2> /dev/null)
 PGG_INSTALLED := $(shell which protoc-gen-go 2> /dev/null)
 PGGG_INSTALLED := $(shell which protoc-gen-go-grpc 2> /dev/null)
+MG_INSTALLED := $(shell which mockgen 2> /dev/null)
 SS_INSTALLED := $(shell which staticcheck 2> /dev/null)
 GL_INSTALLED := $(shell which golint 2> /dev/null)
 M_INSTALLED := $(shell which migrate 2> /dev/null)
@@ -27,6 +28,9 @@ install-tools:
 ifndef PROTOC_INSTALLED
 	$(error "protoc is not installed, please run 'brew install protobuf'")
 endif
+#ifndef M_INSTALLED
+#	$(error "golang-migrate is not installed, please run 'brew install golang-migrate'")
+#endif
 ifndef PGG_INSTALLED
 	@echo Installing protoc-gen-go...
 	@go mod tidy
@@ -51,17 +55,17 @@ ifndef PGOA_INSTALLED
 	@go get github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
 endif
+ifndef MG_INSTALLED
+	@echo Installing mockgen...
+	@go install github.com/golang/mock/mockgen@latest
+endif
 ifndef SS_INSTALLED
 	@echo Installing staticcheck...
-	go install honnef.co/go/tools/cmd/staticcheck@latest
+	@go install honnef.co/go/tools/cmd/staticcheck@latest
 endif
 ifndef GL_INSTALLED
 	@echo Installing golint...
-	go install golang.org/x/lint/golint@latest
-endif
-ifndef M_INSTALLED
-	@echo Installing golang-migrate...
-	@brew install golang-migrate
+	@go install golang.org/x/lint/golint@latest
 endif
 
 # ==============================================================================
@@ -76,8 +80,9 @@ tidy:
 # Build commands
 
 gen: install-tools
-	@echo Running protoc...
-	@sh ./proto_gen.sh .
+	@echo Running go generate...
+#	@sh ./proto_gen.sh .
+	@go generate -x $$(go list ./... | grep -v /gen_pb/ | grep -v /googleapis/ | grep -v /pkg)
 
 build: gen
 	@echo Building...
@@ -95,7 +100,7 @@ lint: build
 
 test:
 	@echo Running tests...
-	@go test -v -race -vet=off $$(go list ./... | grep -v /gen_pb/ | grep -v /googleapis/)
+	@go test -v -race -vet=off $$(go list ./... | grep -v /gen_pb/ | grep -v /googleapis/ | grep -v /proto/)
 # ==============================================================================
 # Database commands
 
