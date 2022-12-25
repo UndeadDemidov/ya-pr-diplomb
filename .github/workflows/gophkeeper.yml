@@ -20,24 +20,12 @@ jobs:
           check-latest: true
           cache: true
       - run: go version
-      - run: ls /home/runner/go/bin
 
-      - name: Cache go tools
-        id: cache-go-tools
-        uses: actions/cache@v3
-        with:
-          path: |
-            /usr/bin/protoc
-            /home/runner/go/bin
-          key: ${{ runner.os }}-go-tools
-
-      - name: Install go-tools
-        if: steps.cache-go-tools.outputs.cache-hit != 'true'
+      - name: Install protoc
         run: |
           sudo apt-get update
           sudo apt-get install -y protobuf-compiler
           protoc --version
-          make install-tools
 
       - name: Cache googleapis repo
         id: cache-googleapis
@@ -56,13 +44,6 @@ jobs:
       - name: Generate
         run: |
           make gen
-          which protoc-gen-grpc-gateway
-          which protoc-gen-openapiv2
-          which protoc-gen-go
-          which protoc-gen-go-grpc
-          which mockgen
-          which staticcheck
-          which golint
 
       - name: Build
         run: go build -v ./...
